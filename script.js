@@ -1,7 +1,7 @@
-// Soda Ship Storefront JavaScript
+// SodaShip Storefront JavaScript
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Soda Ship storefront loaded');
+    console.log('SodaShip storefront loaded');
     
     // Add your JavaScript functionality here
 });
