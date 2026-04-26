@@ -41,7 +41,7 @@ header ul {
 }
 
 header a {
-    color: #fffdf5;
+    color: #ffffff;
     text-decoration: none;
     font-weight: bold;
 }
@@ -59,8 +59,8 @@ main {
 .hero {
     text-align: center;
     padding: 3rem 1rem;
-    background: #d7fdec;
-    border: 4px dashed #ffdfba;
+    background: #ffe4e1;
+    border: 4px dashed #a2d2ff;
     border-radius: 18px;
 }
 
