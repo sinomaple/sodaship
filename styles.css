@@ -18,7 +18,7 @@ header {
     background: #ff7aa8;
     color: #fffdf5;
     padding: 1rem;
-    border-bottom: 6px dotted #7bdff2;
+    border-bottom: 6px dotted #e0bbff;
 }
 
 header nav {
@@ -60,7 +60,7 @@ main {
     text-align: center;
     padding: 3rem 1rem;
     background: #d7fdec;
-    border: 4px dashed #ffb703;
+    border: 4px dashed #ffdfba;
     border-radius: 18px;
 }
 
@@ -98,7 +98,7 @@ h2 {
 
 .product-list section {
     background: #ffffff;
-    border: 3px dashed #7bdff2;
+    border: 3px dashed #bae1ff;
     border-radius: 14px;
     padding: 1rem;
 }
