@@ -10,7 +10,8 @@ body {
     font-family: "Comic Sans MS", "Trebuchet MS", cursive, sans-serif;
     line-height: 1.6;
     color: #3d3150;
-    background: #fff8dc;
+    background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #e0bbff);
+    min-height: 100vh;
 }
 
 header {
