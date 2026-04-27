@@ -41,12 +41,8 @@ header h1 {
 }
 
 .brand img {
-    width: 92px;
-    height: auto;
-}
-
-.home-page .brand img {
     width: 180px;
+    height: auto;
 }
 
 header ul {
