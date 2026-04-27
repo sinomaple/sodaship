@@ -1,14 +1,14 @@
 # SodaShip Project Guidance
 
 ## Goal
-SodaShip is a playful static website for Lillian's knitted hobby products.
+SodaShip is a playful static website for LilyPurl's knitted hobby products.
 
 ## Brand
 - Store name: SodaShip
-- Creator: Lillian
-- Contact email: Lillian@sodaship.com
+- Creator: LilyPurl
+- Contact email: LilyPurl [at] sodaship [dot] com
 - Website: www.sodaship.com
-- Tagline direction: knitted by Lillian
+- Tagline direction: knitted by LilyPurl
 
 ## Style
 - Make the site feel like a cheerful 10-year-old made it with care.
@@ -21,7 +21,8 @@ SodaShip is a playful static website for Lillian's knitted hobby products.
 - Use plain HTML, CSS, JavaScript, and SVG.
 - Keep links and assets relative so they work on GitHub Pages.
 - The custom domain is set in `CNAME`.
-- The logo lives in `logo.svg`; HTML pages reference it with `logo.svg?v=2` to avoid stale browser cache.
+- The logo lives in `logo.svg`; HTML pages reference it with `logo.svg?v=3` to avoid stale browser cache.
+- Do not put raw email addresses in public HTML or JavaScript; the contact page renders the address from protected character codes.
 
 ## Important Files
 - `index.html`: home page
@@ -41,3 +42,4 @@ SodaShip is a playful static website for Lillian's knitted hobby products.
 
 ## Automation
 - After review, auto commit and push to github
+- After push to github test and verify public facing site has latest code

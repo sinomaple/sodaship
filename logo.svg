@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 180" role="img" aria-labelledby="title desc">
   <title id="title">SodaShip logo</title>
-  <desc id="desc">A playful knitted SodaShip logo with a green Sprite bottle with plane wings, colorful lettering, and a mini ball of yarn beside Lillian's name.</desc>
+  <desc id="desc">A playful knitted SodaShip logo with a green Sprite bottle with plane wings, colorful lettering, and a mini ball of yarn beside LilyPurl's name.</desc>
   <defs>
     <linearGradient id="rainbowText" x1="232" y1="0" x2="472" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#ff3b3b"/>
@@ -25,7 +25,7 @@
     <circle cx="81" cy="58" r="5" fill="#fffdf5"/>
   </g>
   <text x="232" y="86" font-family="Comic Sans MS, Trebuchet MS, cursive" font-size="55" font-weight="700" fill="url(#rainbowText)" stroke="#fffdf5" stroke-width="3" paint-order="stroke">SodaShip</text>
-  <text x="238" y="124" font-family="Comic Sans MS, Trebuchet MS, cursive" font-size="20" font-weight="700" fill="#3d3150">knitted by Lillian</text>
+  <text x="238" y="124" font-family="Comic Sans MS, Trebuchet MS, cursive" font-size="20" font-weight="700" fill="#3d3150">knitted by LilyPurl</text>
   <g transform="translate(407 105)">
     <circle cx="18" cy="18" r="16" fill="#e0bbff" stroke="#3d3150" stroke-width="4"/>
     <path d="M6 27c5-5 11-7 18-6M5 18c7-7 15-9 25-7M11 8c6-3 12-3 18-1" fill="none" stroke="#4b0082" stroke-width="2.4" stroke-linecap="round"/>

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setupKitQuestEasterEgg();
+    setupProtectedEmail();
 });
 
 function getLogoClicks() {
@@ -111,6 +112,32 @@ function showSecretNote() {
     }, 5000);
 }
 
+function setupProtectedEmail() {
+    const revealButton = document.querySelector('[data-protected-email]');
+    const output = document.querySelector('.email-output');
+
+    if (!revealButton || !output) {
+        return;
+    }
+
+    const emailCodes = [
+        76, 105, 108, 121, 80, 117, 114, 108, 64, 115, 111,
+        100, 97, 115, 104, 105, 112, 46, 99, 111, 109
+    ];
+
+    revealButton.addEventListener('click', () => {
+        const email = emailCodes.map((code) => String.fromCharCode(code)).join('');
+        const link = document.createElement('a');
+        link.href = `mailto:${email}`;
+        link.textContent = email;
+        link.rel = 'nofollow noopener noreferrer';
+
+        output.replaceChildren(link);
+        revealButton.textContent = 'Email shown';
+        revealButton.disabled = true;
+    });
+}
+
 function setupKitQuestEasterEgg() {
     const secretCode = 'knitkit';
     let typedCode = '';
@@ -191,13 +218,13 @@ function createKitGame() {
             <div class="kit-game-top">
                 <div>
                     <p class="kit-game-kicker">Secret mini game</p>
-                    <h2 id="kit-game-title">Lillian vs. the Yarn Monster</h2>
+                    <h2 id="kit-game-title">LilyPurl vs. the Yarn Monster</h2>
                 </div>
                 <button class="kit-close" type="button" aria-label="Close game">x</button>
             </div>
             <div class="kit-hud">
                 <div class="kit-meter">
-                    <span>Lillian</span>
+                    <span>LilyPurl</span>
                     <div class="kit-meter-track"><div class="kit-meter-fill player-health"></div></div>
                 </div>
                 <div class="kit-score">Kits: <strong class="kit-count">24</strong></div>
@@ -523,12 +550,14 @@ function createKitGame() {
         document.removeEventListener('keydown', handleGameKeyDown);
         document.removeEventListener('keyup', handleGameKeyUp);
 
-        announcement.innerHTML = `
-            <span>${message}</span>
-            <button class="kit-restart" type="button">${buttonText}</button>
-        `;
+        const messageText = document.createElement('span');
+        const restart = document.createElement('button');
+        messageText.textContent = message;
+        restart.className = 'kit-restart';
+        restart.type = 'button';
+        restart.textContent = buttonText;
+        announcement.replaceChildren(messageText, restart);
 
-        const restart = announcement.querySelector('.kit-restart');
         restart.addEventListener('click', () => {
             close();
             launchKnittingKitQuest();
