@@ -22,13 +22,15 @@
     </header>
     <main>
         <h2>Contact LilyPurl</h2>
-        <p>Questions about a knitted item? Reveal LilyPurl's protected email when you need it.</p>
-        <p class="protected-email">
-            <button class="email-button" type="button" data-protected-email>Show email</button>
-            <span class="email-output" aria-live="polite"></span>
-        </p>
+        <p>Questions about a knitted item? Reveal LilyPurl's protected email picture when you need it.</p>
+        <div class="protected-email">
+            <button class="email-button" type="button" data-protected-email>Show email picture</button>
+            <button class="email-button copy-email" type="button" data-copy-email hidden>Copy email</button>
+            <span class="email-output" aria-hidden="true"></span>
+            <span class="email-status" aria-live="polite"></span>
+        </div>
         <noscript>
-            <p class="email-help">JavaScript is needed to reveal the protected email address.</p>
+            <p class="email-help">JavaScript is needed to reveal the protected email picture.</p>
         </noscript>
         <p>Store: <a href="https://www.sodaship.com" rel="noopener noreferrer">www.sodaship.com</a></p>
         <p class="margin-clue">If you find a secret, please tell it softly so the yarn can still be surprised.</p>

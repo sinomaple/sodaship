@@ -22,7 +22,7 @@ SodaShip is a playful static website for LilyPurl's knitted hobby products.
 - Keep links and assets relative so they work on GitHub Pages.
 - The custom domain is set in `CNAME`.
 - The logo lives in `logo.svg`; HTML pages reference it with `logo.svg?v=3` to avoid stale browser cache.
-- Do not put raw email addresses in public HTML or JavaScript; the contact page renders the address from protected character codes.
+- Do not put raw email addresses in public HTML or JavaScript; the contact page draws the address as a protected picture from character codes.
 
 ## Important Files
 - `index.html`: home page
@@ -39,6 +39,7 @@ SodaShip is a playful static website for LilyPurl's knitted hobby products.
 - When changing any page header, compare it against `index.html` and keep the header markup, navigation links, logo reference, and shared logo sizing consistent across all pages.
 - After changing logo references or assets, check every page still points to the correct relative path.
 - For GitHub Pages issues, verify that changed files are committed and pushed to `main`.
+- Check and fix for privacy and security issues
 
 ## Automation
 - After review, auto commit and push to github

@@ -158,6 +158,21 @@ h2 {
     overflow-wrap: anywhere;
 }
 
+.email-picture {
+    display: block;
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 3px 3px 0 rgba(162, 210, 255, 0.65);
+}
+
+.email-status {
+    flex-basis: 100%;
+    min-height: 1.4rem;
+    color: #5f4b77;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
 .email-help {
     margin: 0.5rem 0;
     font-weight: bold;

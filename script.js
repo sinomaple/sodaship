@@ -114,9 +114,11 @@ function showSecretNote() {
 
 function setupProtectedEmail() {
     const revealButton = document.querySelector('[data-protected-email]');
+    const copyButton = document.querySelector('[data-copy-email]');
     const output = document.querySelector('.email-output');
+    const status = document.querySelector('.email-status');
 
-    if (!revealButton || !output) {
+    if (!revealButton || !copyButton || !output || !status) {
         return;
     }
 
@@ -124,18 +126,68 @@ function setupProtectedEmail() {
         76, 105, 108, 121, 80, 117, 114, 108, 64, 115, 111,
         100, 97, 115, 104, 105, 112, 46, 99, 111, 109
     ];
+    let protectedEmail = '';
 
     revealButton.addEventListener('click', () => {
-        const email = emailCodes.map((code) => String.fromCharCode(code)).join('');
-        const link = document.createElement('a');
-        link.href = `mailto:${email}`;
-        link.textContent = email;
-        link.rel = 'nofollow noopener noreferrer';
+        protectedEmail = buildProtectedEmail(emailCodes);
+        output.replaceChildren(drawEmailPicture(protectedEmail));
+        status.textContent = 'Email picture shown. Use the copy button if you need to paste it.';
+        copyButton.hidden = false;
 
-        output.replaceChildren(link);
-        revealButton.textContent = 'Email shown';
+        revealButton.textContent = 'Email picture shown';
         revealButton.disabled = true;
     });
+
+    copyButton.addEventListener('click', async () => {
+        protectedEmail = protectedEmail || buildProtectedEmail(emailCodes);
+
+        if (!navigator.clipboard || !window.isSecureContext) {
+            status.textContent = 'Copy is not available in this browser. Please read the email picture.';
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(protectedEmail);
+            status.textContent = 'Email copied.';
+        } catch (error) {
+            status.textContent = 'Copy did not work. Please read the email picture.';
+        }
+    });
+}
+
+function buildProtectedEmail(codes) {
+    return codes.map((code) => String.fromCharCode(code)).join('');
+}
+
+function drawEmailPicture(email) {
+    const canvas = document.createElement('canvas');
+    const scale = window.devicePixelRatio || 1;
+    const width = 292;
+    const height = 54;
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = width * scale;
+    canvas.height = height * scale;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    canvas.className = 'email-picture';
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', 'Protected email picture');
+
+    ctx.scale(scale, scale);
+    ctx.fillStyle = '#fffdf5';
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = '#3d3150';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([7, 5]);
+    ctx.strokeRect(4, 4, width - 8, height - 8);
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#3d3150';
+    ctx.font = 'bold 21px "Comic Sans MS", "Trebuchet MS", cursive, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(email, 18, height / 2);
+
+    return canvas;
 }
 
 function setupKitQuestEasterEgg() {
