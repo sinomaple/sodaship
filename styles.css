@@ -146,7 +146,7 @@ footer {
     bottom: -2rem;
     z-index: 9;
     pointer-events: none;
-    animation: float-yarn 3.4s ease-out forwards;
+    animation: float-yarn 2.4s ease-out forwards;
 }
 
 .confetti {
@@ -171,7 +171,7 @@ footer {
     }
 
     to {
-        transform: translateY(-110vh) translateX(40px) rotate(720deg);
+        transform: translateY(-130vh) translateX(70px) rotate(900deg);
         opacity: 0;
     }
 }
