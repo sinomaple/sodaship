@@ -1,4 +1,6 @@
 // SodaShip Storefront JavaScript
+let sodaAudioContext;
+let sodaMasterGain;
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('SodaShip storefront loaded');
@@ -52,6 +54,7 @@ function launchYarnParty() {
     message.textContent = 'Secret yarn party unlocked!';
     document.body.appendChild(message);
 
+    playYarnPartySound();
     launchConfetti();
     launchSparkles();
 
@@ -106,10 +109,150 @@ function showSecretNote() {
     note.className = 'easter-egg-message secret-note';
     note.textContent = 'Congratulations, you found the secret surprise!! Yarn party champion!';
     document.body.appendChild(note);
+    playSecretNoteSound();
 
     setTimeout(() => {
         note.remove();
     }, 5000);
+}
+
+function getAudioContext() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        return null;
+    }
+
+    try {
+        if (!sodaAudioContext) {
+            sodaAudioContext = new AudioContextClass();
+            sodaMasterGain = sodaAudioContext.createGain();
+            sodaMasterGain.gain.value = 0.11;
+            sodaMasterGain.connect(sodaAudioContext.destination);
+        }
+
+        if (sodaAudioContext.state === 'suspended') {
+            sodaAudioContext.resume().catch(() => {});
+        }
+
+        return sodaAudioContext;
+    } catch (error) {
+        return null;
+    }
+}
+
+function playTone(frequency, duration, options = {}) {
+    const context = getAudioContext();
+
+    if (!context || !sodaMasterGain) {
+        return;
+    }
+
+    const delay = options.delay || 0;
+    const volume = options.volume || 0.5;
+    const type = options.type || 'sine';
+    const when = context.currentTime + delay;
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, when);
+
+    if (options.endFrequency) {
+        oscillator.frequency.exponentialRampToValueAtTime(options.endFrequency, when + duration);
+    }
+
+    gain.gain.setValueAtTime(0.0001, when);
+    gain.gain.exponentialRampToValueAtTime(volume, when + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+
+    oscillator.connect(gain);
+    gain.connect(sodaMasterGain);
+    oscillator.start(when);
+    oscillator.stop(when + duration + 0.04);
+}
+
+function playNoise(duration, options = {}) {
+    const context = getAudioContext();
+
+    if (!context || !sodaMasterGain) {
+        return;
+    }
+
+    const delay = options.delay || 0;
+    const volume = options.volume || 0.18;
+    const when = context.currentTime + delay;
+    const buffer = context.createBuffer(1, Math.max(1, Math.floor(context.sampleRate * duration)), context.sampleRate);
+    const data = buffer.getChannelData(0);
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+
+    for (let i = 0; i < data.length; i += 1) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    }
+
+    source.buffer = buffer;
+    gain.gain.setValueAtTime(volume, when);
+    gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+    source.connect(gain);
+    gain.connect(sodaMasterGain);
+    source.start(when);
+}
+
+function playYarnPartySound() {
+    [523.25, 659.25, 783.99, 1046.5].forEach((note, index) => {
+        playTone(note, 0.16, { delay: index * 0.09, volume: 0.42, type: 'triangle' });
+    });
+    playNoise(0.35, { delay: 0.15, volume: 0.07 });
+}
+
+function playSecretNoteSound() {
+    playTone(880, 0.14, { volume: 0.32, type: 'sine' });
+    playTone(1174.66, 0.2, { delay: 0.11, volume: 0.28, type: 'sine' });
+}
+
+function playGameStartSound() {
+    playTone(392, 0.11, { volume: 0.32, type: 'square' });
+    playTone(523.25, 0.11, { delay: 0.1, volume: 0.28, type: 'square' });
+    playTone(659.25, 0.18, { delay: 0.2, volume: 0.26, type: 'triangle' });
+}
+
+function playKitThrowSound() {
+    playTone(740, 0.12, { volume: 0.18, type: 'triangle', endFrequency: 1120 });
+}
+
+function playShieldSound() {
+    playTone(330, 0.2, { volume: 0.22, type: 'sine', endFrequency: 660 });
+    playTone(990, 0.12, { delay: 0.04, volume: 0.12, type: 'triangle' });
+}
+
+function playMonsterTangleSound() {
+    playTone(185, 0.14, { volume: 0.08, type: 'sawtooth', endFrequency: 120 });
+}
+
+function playMonsterHitSound() {
+    playTone(260, 0.08, { volume: 0.2, type: 'square', endFrequency: 180 });
+    playTone(520, 0.1, { delay: 0.04, volume: 0.14, type: 'triangle', endFrequency: 390 });
+}
+
+function playBlockSound() {
+    playTone(620, 0.08, { volume: 0.16, type: 'triangle' });
+    playTone(930, 0.12, { delay: 0.05, volume: 0.12, type: 'sine' });
+}
+
+function playPlayerHitSound() {
+    playTone(160, 0.18, { volume: 0.2, type: 'sawtooth', endFrequency: 90 });
+}
+
+function playWinSound() {
+    [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((note, index) => {
+        playTone(note, 0.16, { delay: index * 0.08, volume: 0.25, type: 'triangle' });
+    });
+}
+
+function playLoseSound() {
+    playTone(330, 0.18, { volume: 0.22, type: 'sine', endFrequency: 220 });
+    playTone(220, 0.24, { delay: 0.16, volume: 0.18, type: 'sine', endFrequency: 146.83 });
 }
 
 function setupProtectedEmail() {
@@ -344,6 +487,7 @@ function createKitGame() {
 
     function start() {
         arena.focus();
+        playGameStartSound();
         document.addEventListener('keydown', handleGameKeyDown);
         document.addEventListener('keyup', handleGameKeyUp);
         closeButton.addEventListener('click', close);
@@ -445,6 +589,7 @@ function createKitGame() {
         kit.style.top = `${state.playerY}%`;
         arena.appendChild(kit);
         projectiles.push({ element: kit, x: 19, y: state.playerY });
+        playKitThrowSound();
         updateHud();
     }
 
@@ -455,6 +600,7 @@ function createKitGame() {
 
         state.shield = 1.4;
         girl.classList.add('shielded');
+        playShieldSound();
         setTimeout(() => {
             girl.classList.remove('shielded');
         }, 1400);
@@ -467,6 +613,7 @@ function createKitGame() {
         tangle.style.top = `${state.monsterY}%`;
         arena.appendChild(tangle);
         tangles.push({ element: tangle, x: 78, y: state.monsterY });
+        playMonsterTangleSound();
     }
 
     function tick(time) {
@@ -529,6 +676,7 @@ function createKitGame() {
             if (projectile.x > 73 && Math.abs(projectile.y - state.monsterY) < 15) {
                 state.monsterHealth = Math.max(0, state.monsterHealth - 9);
                 monster.classList.add('monster-hit');
+                playMonsterHitSound();
                 setTimeout(() => monster.classList.remove('monster-hit'), 160);
                 projectile.element.remove();
                 projectiles.splice(i, 1);
@@ -553,9 +701,11 @@ function createKitGame() {
             if (tangle.x < 27 && Math.abs(tangle.y - state.playerY) < 13) {
                 if (state.shield > 0) {
                     announcement.textContent = 'Stitch shield blocked the tangle!';
+                    playBlockSound();
                 } else {
                     state.playerHealth = Math.max(0, state.playerHealth - 14);
                     girl.classList.add('girl-hit');
+                    playPlayerHitSound();
                     setTimeout(() => girl.classList.remove('girl-hit'), 180);
                     announcement.textContent = 'Oh no, a yarn tangle landed!';
                 }
@@ -587,11 +737,13 @@ function createKitGame() {
 
     function checkGameOver() {
         if (state.monsterHealth <= 0) {
+            playWinSound();
             endGame('You saved SodaShip from the yarn monster!', 'Play again');
             return;
         }
 
         if (state.playerHealth <= 0) {
+            playLoseSound();
             endGame('The yarn monster made a giant knot. Try again!', 'Try again');
         }
     }
