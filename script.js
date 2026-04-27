@@ -10,18 +10,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     logo.addEventListener('click', (event) => {
-        const logoClicks = Number(sessionStorage.getItem('sodashipLogoClicks') || 0) + 1;
-        sessionStorage.setItem('sodashipLogoClicks', logoClicks);
+        const logoClicks = getLogoClicks() + 1;
+        setLogoClicks(logoClicks);
 
-        if (logoClicks < 3) {
+        if (logoClicks < 5) {
             return;
         }
 
         event.preventDefault();
-        sessionStorage.setItem('sodashipLogoClicks', 0);
+        setLogoClicks(0);
         launchYarnParty();
     });
 });
+
+function getLogoClicks() {
+    try {
+        return Number(sessionStorage.getItem('sodashipLogoClicks') || 0);
+    } catch (error) {
+        return Number(document.body.dataset.logoClicks || 0);
+    }
+}
+
+function setLogoClicks(count) {
+    try {
+        sessionStorage.setItem('sodashipLogoClicks', count);
+    } catch (error) {
+        document.body.dataset.logoClicks = count;
+    }
+}
 
 function launchYarnParty() {
     if (document.body.classList.contains('yarn-party')) {
@@ -32,23 +48,11 @@ function launchYarnParty() {
 
     const message = document.createElement('div');
     message.className = 'easter-egg-message';
-    message.textContent = 'Secret yarn mode!';
+    message.textContent = 'Secret yarn party unlocked!';
     document.body.appendChild(message);
 
-    for (let i = 0; i < 150; i += 1) {
-        const yarn = document.createElement('span');
-        yarn.className = 'floating-yarn confetti';
-        yarn.style.left = `${Math.random() * 100}%`;
-        yarn.style.width = `${3 + Math.random() * 4}px`;
-        yarn.style.height = `${14 + Math.random() * 18}px`;
-        yarn.style.animationDelay = `${Math.random() * 2.5}s`;
-        yarn.style.background = ['#ff7aa8', '#ffb703', '#7b2cbf', '#a2d2ff', '#baffc9'][i % 5];
-        document.body.appendChild(yarn);
-
-        setTimeout(() => {
-            yarn.remove();
-        }, 6500);
-    }
+    launchConfetti();
+    launchSparkles();
 
     setTimeout(() => {
         message.remove();
@@ -57,10 +61,49 @@ function launchYarnParty() {
     }, 6500);
 }
 
+function launchConfetti() {
+    const colors = ['#ff7aa8', '#ffb703', '#7b2cbf', '#a2d2ff', '#baffc9'];
+
+    for (let i = 0; i < 220; i += 1) {
+        const confetti = document.createElement('span');
+        confetti.className = 'falling-confetti';
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.width = `${3 + Math.random() * 4}px`;
+        confetti.style.height = `${14 + Math.random() * 22}px`;
+        confetti.style.animationDelay = `${Math.random() * 3.2}s`;
+        confetti.style.animationDuration = `${1.8 + Math.random() * 1.4}s`;
+        confetti.style.background = colors[i % colors.length];
+        confetti.style.setProperty('--drift', `${Math.random() * 140 - 70}px`);
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 7200);
+    }
+}
+
+function launchSparkles() {
+    const words = ['WOW', 'YAY', 'COZY', 'KNIT', 'SECRET'];
+
+    for (let i = 0; i < 14; i += 1) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'surprise-sparkle';
+        sparkle.textContent = i % 2 === 0 ? '*' : words[i % words.length];
+        sparkle.style.left = `${8 + Math.random() * 84}%`;
+        sparkle.style.top = `${18 + Math.random() * 58}%`;
+        sparkle.style.animationDelay = `${Math.random() * 1.8}s`;
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => {
+            sparkle.remove();
+        }, 5200);
+    }
+}
+
 function showSecretNote() {
     const note = document.createElement('div');
     note.className = 'easter-egg-message secret-note';
-    note.textContent = 'Congratulations, you found the secret surprise!!';
+    note.textContent = 'Congratulations, you found the secret surprise!! Yarn party champion!';
     document.body.appendChild(note);
 
     setTimeout(() => {

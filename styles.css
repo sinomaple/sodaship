@@ -126,32 +126,52 @@ footer {
     animation: rainbow-glow 0.8s ease-in-out infinite alternate;
 }
 
+.yarn-party .brand img {
+    animation: logo-wiggle 0.45s ease-in-out infinite alternate;
+}
+
 .easter-egg-message {
     position: fixed;
     left: 50%;
     top: 1rem;
     transform: translateX(-50%);
     z-index: 10;
+    width: max-content;
+    max-width: min(90vw, 520px);
     background: #fffdf5;
     color: #7b2cbf;
     border: 3px dashed #ff7aa8;
     border-radius: 14px;
     padding: 0.75rem 1rem;
     font-weight: bold;
+    text-align: center;
+    overflow-wrap: break-word;
     box-shadow: 4px 4px 0 #a2d2ff;
 }
 
-.floating-yarn {
-    position: fixed;
-    bottom: -2rem;
-    z-index: 9;
-    pointer-events: none;
-    animation: float-yarn 2.4s ease-out forwards;
+.secret-note {
+    top: 4.5rem;
+    animation: note-pop 0.45s ease-out;
 }
 
-.confetti {
+.falling-confetti {
+    position: fixed;
+    top: -3rem;
+    z-index: 9;
+    pointer-events: none;
     border-radius: 3px;
     box-shadow: 2px 2px 0 rgba(61, 49, 80, 0.2);
+    animation: confetti-fall ease-in forwards;
+}
+
+.surprise-sparkle {
+    position: fixed;
+    z-index: 9;
+    color: #7b2cbf;
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 2px 2px #ffb703;
+    animation: sparkle-pop 1.6s ease-in-out forwards;
 }
 
 @keyframes rainbow-glow {
@@ -164,14 +184,53 @@ footer {
     }
 }
 
-@keyframes float-yarn {
+@keyframes logo-wiggle {
+    from {
+        transform: rotate(-3deg) scale(1);
+    }
+
+    to {
+        transform: rotate(3deg) scale(1.06);
+    }
+}
+
+@keyframes note-pop {
+    from {
+        transform: translateX(-50%) scale(0.75);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes confetti-fall {
     from {
         transform: translateY(0) rotate(0deg);
         opacity: 1;
     }
 
     to {
-        transform: translateY(-130vh) translateX(70px) rotate(900deg);
+        transform: translateY(115vh) translateX(var(--drift)) rotate(900deg);
+        opacity: 0;
+    }
+}
+
+@keyframes sparkle-pop {
+    0% {
+        transform: translate(-50%, 0) scale(0.5) rotate(-8deg);
+        opacity: 0;
+    }
+
+    35% {
+        transform: translate(-50%, -16px) scale(1.25) rotate(8deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -44px) scale(0.8) rotate(0deg);
         opacity: 0;
     }
 }
