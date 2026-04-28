@@ -413,7 +413,7 @@ function createKitGame() {
             <div class="kit-game-top">
                 <div>
                     <p class="kit-game-kicker">Secret mini game</p>
-                    <h2 id="kit-game-title">LilyPad vs. the Yarn Monster</h2>
+                    <h2 id="kit-game-title">LilyPad vs. the Yarn Monster <span class="kit-game-version" aria-label="version 1.1">v1.1</span></h2>
                 </div>
                 <button class="kit-close" type="button" aria-label="Close game">x</button>
             </div>

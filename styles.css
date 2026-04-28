@@ -287,7 +287,25 @@ footer {
 }
 
 .kit-game-top h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
     margin: 0;
+}
+
+.kit-game-version {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.08rem 0.35rem;
+    border: 2px solid #3d3150;
+    border-radius: 999px;
+    background: #ffffba;
+    box-shadow: 2px 2px 0 rgba(61, 49, 80, 0.18);
+    color: #3d3150;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    transform: rotate(3deg);
 }
 
 .kit-close {
