@@ -23,6 +23,7 @@ SodaShip is a playful static website for LilyPad's knitted hobby products.
 - The custom domain is set in `CNAME`.
 - The logo lives in `logo.svg`; HTML pages reference it with `logo.svg?v=4` to avoid stale browser cache.
 - Do not put raw email addresses in public HTML or JavaScript; the contact page draws the address as a protected picture from character codes.
+- The secret mini game version is read from `mini-game-version.json`; `.github/workflows/advance-mini-game-version.yml` auto-bumps it after normal pushes to `main`.
 
 ## Important Files
 - `index.html`: home page

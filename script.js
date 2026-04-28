@@ -1,6 +1,10 @@
 // SodaShip Storefront JavaScript
+const MINI_GAME_VERSION_FALLBACK = 'v1.1';
+
 let sodaAudioContext;
 let sodaMasterGain;
+let miniGameVersion = MINI_GAME_VERSION_FALLBACK;
+let miniGameVersionRequest;
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('SodaShip storefront loaded');
@@ -24,7 +28,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupKitQuestEasterEgg();
     setupProtectedEmail();
+    loadMiniGameVersion();
 });
+
+function loadMiniGameVersion() {
+    if (miniGameVersionRequest) {
+        return miniGameVersionRequest;
+    }
+
+    if (!window.fetch) {
+        return Promise.resolve(miniGameVersion);
+    }
+
+    miniGameVersionRequest = fetch('mini-game-version.json', { cache: 'no-store' })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Mini game version unavailable');
+            }
+
+            return response.json();
+        })
+        .then((data) => {
+            const version = data && typeof data.version === 'string' ? data.version.trim() : '';
+
+            if (/^v\d+\.\d+$/.test(version)) {
+                miniGameVersion = version;
+                updateMiniGameVersionBadges();
+            }
+
+            return miniGameVersion;
+        })
+        .catch(() => miniGameVersion);
+
+    return miniGameVersionRequest;
+}
+
+function updateMiniGameVersionBadges(root = document) {
+    root.querySelectorAll('.kit-game-version').forEach((badge) => {
+        const spokenVersion = miniGameVersion.replace(/^v/, '');
+        badge.textContent = miniGameVersion;
+        badge.setAttribute('aria-label', `version ${spokenVersion}`);
+    });
+}
 
 function getLogoClicks() {
     try {
@@ -398,6 +443,8 @@ function launchKnittingKitQuest() {
 
     const game = createKitGame();
     document.body.appendChild(game.overlay);
+    updateMiniGameVersionBadges(game.overlay);
+    loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
     game.start();
 }
 
@@ -413,7 +460,7 @@ function createKitGame() {
             <div class="kit-game-top">
                 <div>
                     <p class="kit-game-kicker">Secret mini game</p>
-                    <h2 id="kit-game-title">LilyPad vs. the Yarn Monster <span class="kit-game-version" aria-label="version 1.1">v1.1</span></h2>
+                    <h2 id="kit-game-title">LilyPad vs. the Yarn Monster <span class="kit-game-version" aria-label="version 1.1">${MINI_GAME_VERSION_FALLBACK}</span></h2>
                 </div>
                 <button class="kit-close" type="button" aria-label="Close game">x</button>
             </div>

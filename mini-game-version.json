@@ -1,0 +1,8 @@
+{
+  "major": 1,
+  "minor": 1,
+  "version": "v1.1",
+  "updatedAt": "2026-04-28T00:00:00Z",
+  "sourceCommit": "manual",
+  "note": "Auto-bumped by GitHub Actions after normal pushes to main."
+}
