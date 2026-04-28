@@ -738,21 +738,23 @@ function createKitGame() {
     function checkGameOver() {
         if (state.monsterHealth <= 0) {
             playWinSound();
-            endGame('You saved SodaShip from the yarn monster!', 'Play again');
+            endGame('You saved SodaShip from the yarn monster!', 'Play again', 'win');
             return;
         }
 
         if (state.playerHealth <= 0) {
             playLoseSound();
-            endGame('The yarn monster made a giant knot. Try again!', 'Try again');
+            endGame('The yarn monster made a giant knot. Try again!', 'Try again', 'lose');
         }
     }
 
-    function endGame(message, buttonText) {
+    function endGame(message, buttonText, result) {
         state.active = false;
         cancelAnimationFrame(state.frame);
         document.removeEventListener('keydown', handleGameKeyDown);
         document.removeEventListener('keyup', handleGameKeyUp);
+        clearMovingPieces();
+        showFinishEffect(result);
 
         const messageText = document.createElement('span');
         const restart = document.createElement('button');
@@ -766,6 +768,59 @@ function createKitGame() {
             close();
             launchKnittingKitQuest();
         });
+    }
+
+    function clearMovingPieces() {
+        projectiles.splice(0).forEach((projectile) => projectile.element.remove());
+        tangles.splice(0).forEach((tangle) => tangle.element.remove());
+    }
+
+    function showFinishEffect(result) {
+        const badge = document.createElement('div');
+        badge.className = `kit-finish-badge ${result === 'win' ? 'boss-badge' : 'soft-badge'}`;
+        badge.textContent = result === 'win' ? 'YARN BOSS UNRAVELED!' : 'SOFT LANDING!';
+        arena.appendChild(badge);
+
+        if (result === 'win') {
+            monster.classList.add('boss-defeated');
+            girl.classList.add('girl-victory');
+            launchBossBurst();
+            return;
+        }
+
+        girl.classList.add('lilypad-ko');
+        monster.classList.add('boss-gloat');
+        launchSoftLandingPuffs();
+    }
+
+    function launchBossBurst() {
+        for (let i = 0; i < 30; i += 1) {
+            const yarnBit = document.createElement('span');
+            const angle = (Math.PI * 2 * i) / 30;
+            const distance = 46 + Math.random() * 78;
+            yarnBit.className = 'boss-yarn-pop';
+            yarnBit.style.left = '82%';
+            yarnBit.style.top = `${state.monsterY}%`;
+            yarnBit.style.background = pickRandom(['#ff7aa8', '#e0bbff', '#a2d2ff', '#ffffba']);
+            yarnBit.style.setProperty('--burst-x', `${Math.cos(angle) * distance}px`);
+            yarnBit.style.setProperty('--burst-y', `${Math.sin(angle) * distance}px`);
+            yarnBit.style.animationDelay = `${Math.random() * 0.16}s`;
+            arena.appendChild(yarnBit);
+        }
+    }
+
+    function launchSoftLandingPuffs() {
+        for (let i = 0; i < 12; i += 1) {
+            const puff = document.createElement('span');
+            const drift = (i - 5.5) * 13;
+            puff.className = 'soft-landing-puff';
+            puff.style.left = '18%';
+            puff.style.top = `${clamp(state.playerY + 19, 25, 88)}%`;
+            puff.style.setProperty('--puff-x', `${drift}px`);
+            puff.style.setProperty('--puff-y', `${-18 - Math.random() * 26}px`);
+            puff.style.animationDelay = `${Math.random() * 0.2}s`;
+            arena.appendChild(puff);
+        }
     }
 
     return { overlay, start };
