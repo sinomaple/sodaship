@@ -913,11 +913,6 @@ footer {
     transition: filter 0.12s ease, transform 0.12s ease;
 }
 
-.dash-runner.ducking {
-    transform: translateY(22px) scaleY(0.62);
-    transform-origin: center bottom;
-}
-
 .dash-victory {
     animation: dash-victory-hop 0.38s ease-in-out 5 alternate;
 }
@@ -1006,7 +1001,7 @@ footer {
 }
 
 .dash-controls {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
 }
 
 @keyframes rainbow-glow {
@@ -1301,10 +1296,6 @@ footer {
         left: 7%;
         transform: scale(0.8);
         transform-origin: left bottom;
-    }
-
-    .dash-runner.ducking {
-        transform: translateY(22px) scale(0.8, 0.56);
     }
 
     .dash-monster {

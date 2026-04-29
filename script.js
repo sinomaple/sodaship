@@ -502,9 +502,9 @@ function createYarnDashRun() {
                 <button class="kit-close" type="button" aria-label="Close game">x</button>
             </div>
             <div class="dash-hud">
-                <div class="kit-score">Yards: <strong class="dash-distance">0</strong></div>
-                <div class="kit-score">Hearts: <strong class="dash-hearts">3</strong></div>
-                <div class="kit-score">Dodges: <strong class="dash-dodges">0</strong></div>
+                <div class="kit-score">Progress: <strong class="dash-progress">0%</strong></div>
+                <div class="kit-score">Jumps: <strong class="dash-jumps">0</strong></div>
+                <div class="kit-score">Cleared: <strong class="dash-cleared">0</strong></div>
             </div>
             <div class="kit-arena dash-arena" tabindex="0" aria-label="Yarn dash obstacle lane">
                 <div class="dash-cloud cloud-one"></div>
@@ -527,70 +527,64 @@ function createYarnDashRun() {
                     <span class="monster-tentacle tentacle-two"></span>
                     <span class="monster-tentacle tentacle-three"></span>
                 </div>
-                <p class="kit-announcement">Jump the bumps. Duck the flying yarn!</p>
+                <p class="kit-announcement">Hop through the whole course. The monster unravels at the finish!</p>
             </div>
             <div class="kit-controls dash-controls">
                 <button type="button" data-dash-action="jump">Jump</button>
-                <button type="button" data-dash-action="duck">Duck</button>
             </div>
-            <p class="kit-directions">Space, Arrow Up, or W jumps. Arrow Down, S, or Shift ducks.</p>
+            <p class="kit-directions">Space, Arrow Up, W, or the Jump button hops. One bonk restarts the run.</p>
         </div>
     `;
 
     const arena = overlay.querySelector('.dash-arena');
     const runner = overlay.querySelector('.dash-runner');
     const monster = overlay.querySelector('.dash-monster');
-    const distanceText = overlay.querySelector('.dash-distance');
-    const heartsText = overlay.querySelector('.dash-hearts');
-    const dodgesText = overlay.querySelector('.dash-dodges');
+    const progressText = overlay.querySelector('.dash-progress');
+    const jumpsText = overlay.querySelector('.dash-jumps');
+    const clearedText = overlay.querySelector('.dash-cleared');
     const announcement = overlay.querySelector('.kit-announcement');
     const closeButton = overlay.querySelector('.kit-close');
-    const pressed = new Set();
     const roadObjects = [];
     const runnerBox = {
         x: 92,
         width: 42,
         height: 86,
-        duckHeight: 52,
         ground: 46
     };
+    const dashCourse = [
+        { at: 2, type: 'button-bump' },
+        { at: 10, type: 'soda-crate' },
+        { at: 18, type: 'yarn-shot' },
+        { at: 27, type: 'button-bump' },
+        { at: 36, type: 'needle-gate' },
+        { at: 45, type: 'yarn-shot' },
+        { at: 54, type: 'soda-crate' },
+        { at: 63, type: 'button-bump' },
+        { at: 72, type: 'yarn-shot' },
+        { at: 82, type: 'needle-gate' }
+    ];
     const state = {
         active: true,
         lastTime: 0,
         frame: 0,
         distance: 0,
-        hearts: 3,
-        dodges: 0,
+        jumps: 0,
+        cleared: 0,
+        nextCourseIndex: 0,
         runnerY: 0,
         runnerVelocity: 0,
-        ducking: false,
-        hitGrace: 0,
-        obstacleTimer: 0.5,
-        shotTimer: 1,
-        speed: 235
+        speed: 255
     };
-    const finishDistance = 80;
+    const finishDistance = 120;
 
     function start() {
         arena.focus();
         playGameStartSound();
         document.addEventListener('keydown', handleDashKeyDown);
-        document.addEventListener('keyup', handleDashKeyUp);
         closeButton.addEventListener('click', close);
         overlay.addEventListener('click', handleBackdropClick);
         overlay.querySelectorAll('[data-dash-action]').forEach((button) => {
             button.addEventListener('pointerdown', () => {
-                if (button.dataset.dashAction === 'jump') {
-                    jump();
-                }
-
-                if (button.dataset.dashAction === 'duck') {
-                    pressed.add('duck');
-                }
-            });
-            button.addEventListener('pointerup', () => pressed.delete('duck'));
-            button.addEventListener('pointerleave', () => pressed.delete('duck'));
-            button.addEventListener('click', () => {
                 if (button.dataset.dashAction === 'jump') {
                     jump();
                 }
@@ -604,7 +598,6 @@ function createYarnDashRun() {
         state.active = false;
         cancelAnimationFrame(state.frame);
         document.removeEventListener('keydown', handleDashKeyDown);
-        document.removeEventListener('keyup', handleDashKeyUp);
         overlay.remove();
     }
 
@@ -626,21 +619,8 @@ function createYarnDashRun() {
             jump();
         }
 
-        if (['arrowdown', 's', 'shift'].includes(key)) {
-            event.preventDefault();
-            pressed.add('duck');
-        }
-
         if (key === 'escape') {
             close();
-        }
-    }
-
-    function handleDashKeyUp(event) {
-        const key = event.key.toLowerCase();
-
-        if (['arrowdown', 's', 'shift'].includes(key)) {
-            pressed.delete('duck');
         }
     }
 
@@ -650,6 +630,7 @@ function createYarnDashRun() {
         }
 
         state.runnerVelocity = 435;
+        state.jumps += 1;
         playBlockSound();
     }
 
@@ -664,12 +645,17 @@ function createYarnDashRun() {
 
         const dt = Math.min((time - state.lastTime) / 1000, 0.05);
         state.lastTime = time;
-        state.distance += dt * 12;
-        state.speed = Math.min(345, 235 + state.distance * 1.5);
+        state.distance += dt * 8;
+        state.speed = Math.min(340, 255 + state.distance * 0.85);
 
         updateDashRunner(dt);
-        updateDashSpawns(dt);
+        updateDashCourse();
         updateDashObjects(dt);
+
+        if (!state.active) {
+            return;
+        }
+
         updateDashHud();
         checkDashGameOver();
 
@@ -686,29 +672,23 @@ function createYarnDashRun() {
             state.runnerVelocity = 0;
         }
 
-        state.ducking = pressed.has('duck') && state.runnerY < 4;
-        state.hitGrace = Math.max(0, state.hitGrace - dt);
         runner.style.bottom = `${runnerBox.ground + state.runnerY}px`;
-        runner.classList.toggle('ducking', state.ducking);
     }
 
-    function updateDashSpawns(dt) {
-        state.obstacleTimer -= dt;
-        state.shotTimer -= dt;
+    function updateDashCourse() {
+        while (dashCourse[state.nextCourseIndex] && state.distance >= dashCourse[state.nextCourseIndex].at) {
+            const event = dashCourse[state.nextCourseIndex];
+            state.nextCourseIndex += 1;
 
-        if (state.obstacleTimer <= 0) {
-            spawnDashObstacle();
-            state.obstacleTimer = 0.85 + Math.random() * 0.7;
-        }
-
-        if (state.shotTimer <= 0) {
-            spawnDashYarnShot();
-            state.shotTimer = 1.05 + Math.random() * 0.9;
+            if (event.type === 'yarn-shot') {
+                spawnDashYarnShot();
+            } else {
+                spawnDashObstacle(event.type);
+            }
         }
     }
 
-    function spawnDashObstacle() {
-        const type = pickRandom(['soda-crate', 'button-bump', 'needle-gate']);
+    function spawnDashObstacle(type) {
         const specs = {
             'soda-crate': { width: 48, height: 48, bottom: runnerBox.ground },
             'button-bump': { width: 58, height: 34, bottom: runnerBox.ground },
@@ -733,7 +713,7 @@ function createYarnDashRun() {
 
     function spawnDashYarnShot() {
         const shot = document.createElement('span');
-        const bottom = pickRandom([102, 126, 148]);
+        const bottom = runnerBox.ground + 12;
 
         shot.className = 'dash-yarn-shot';
         shot.style.left = `${arena.clientWidth + 92}px`;
@@ -760,25 +740,15 @@ function createYarnDashRun() {
             item.x -= state.speed * dt;
             item.element.style.left = `${item.x}px`;
 
-            if (!item.hit && state.hitGrace === 0 && boxesOverlap(player, getDashItemBox(item))) {
+            if (!item.hit && boxesOverlap(player, getDashItemBox(item))) {
                 item.hit = true;
-                state.hearts = Math.max(0, state.hearts - 1);
-                state.hitGrace = 1.25;
-                runner.classList.add('girl-hit');
-                playPlayerHitSound();
-                setTimeout(() => runner.classList.remove('girl-hit'), 180);
-                announcement.textContent = pickRandom([
-                    'Bonk! LilyPad bounced off a yarn surprise!',
-                    'Careful, the yarn lane is getting spicy!',
-                    'That tangle almost knitted a speed bump!'
-                ]);
-                item.element.remove();
-                roadObjects.splice(i, 1);
-                continue;
+                playLoseSound();
+                endDashGame('Bonk! One yarn bump restarts the course.', 'Try again', 'lose');
+                return;
             }
 
             if (item.x < -90) {
-                state.dodges += 1;
+                state.cleared += 1;
                 item.element.remove();
                 roadObjects.splice(i, 1);
             }
@@ -786,14 +756,13 @@ function createYarnDashRun() {
     }
 
     function getDashPlayerBox() {
-        const height = state.ducking ? runnerBox.duckHeight : runnerBox.height;
         const arenaHeight = arena.clientHeight || 360;
 
         return {
             x: runnerBox.x,
-            y: arenaHeight - runnerBox.ground - state.runnerY - height,
+            y: arenaHeight - runnerBox.ground - state.runnerY - runnerBox.height,
             width: runnerBox.width,
-            height
+            height: runnerBox.height
         };
     }
 
@@ -816,21 +785,15 @@ function createYarnDashRun() {
     }
 
     function updateDashHud() {
-        distanceText.textContent = `${Math.floor(state.distance)}/${finishDistance}`;
-        heartsText.textContent = state.hearts;
-        dodgesText.textContent = state.dodges;
+        progressText.textContent = `${Math.min(100, Math.floor((state.distance / finishDistance) * 100))}%`;
+        jumpsText.textContent = state.jumps;
+        clearedText.textContent = state.cleared;
     }
 
     function checkDashGameOver() {
         if (state.distance >= finishDistance) {
             playWinSound();
-            endDashGame('LilyPad dashed through the yarn storm!', 'Run again', 'win');
-            return;
-        }
-
-        if (state.hearts <= 0) {
-            playLoseSound();
-            endDashGame('The yarn monster made a roadblock. Try again!', 'Try again', 'lose');
+            endDashGame('Finish reached! The yarn monster finally unraveled!', 'Run again', 'win');
         }
     }
 
@@ -838,12 +801,11 @@ function createYarnDashRun() {
         state.active = false;
         cancelAnimationFrame(state.frame);
         document.removeEventListener('keydown', handleDashKeyDown);
-        document.removeEventListener('keyup', handleDashKeyUp);
         roadObjects.splice(0).forEach((item) => item.element.remove());
 
         const badge = document.createElement('div');
         badge.className = `kit-finish-badge dash-finish-badge ${result === 'win' ? 'boss-badge' : 'soft-badge'}`;
-        badge.textContent = result === 'win' ? 'DASH COMPLETE!' : 'YARN ROADBLOCK!';
+        badge.textContent = result === 'win' ? 'FINISH! BOSS UNRAVELED!' : 'YARN ROADBLOCK!';
         arena.appendChild(badge);
         runner.classList.add(result === 'win' ? 'dash-victory' : 'dash-crash');
         monster.classList.add(result === 'win' ? 'boss-defeated' : 'boss-gloat');
