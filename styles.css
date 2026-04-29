@@ -835,6 +835,180 @@ footer {
     font-weight: bold;
 }
 
+.dash-game-panel {
+    box-shadow: 8px 8px 0 #a2d2ff;
+}
+
+.dash-hud {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.dash-arena {
+    background:
+        linear-gradient(#bde0fe 0 42%, #d9f99d 42% 62%, #8d99ae 62% 100%);
+}
+
+.dash-cloud {
+    position: absolute;
+    width: 110px;
+    height: 42px;
+    border-radius: 999px;
+    background: #fffdf5;
+    opacity: 0.82;
+}
+
+.dash-cloud::before,
+.dash-cloud::after {
+    content: "";
+    position: absolute;
+    background: #fffdf5;
+    border-radius: 50%;
+}
+
+.dash-cloud::before {
+    left: 18px;
+    top: -18px;
+    width: 44px;
+    height: 44px;
+}
+
+.dash-cloud::after {
+    right: 20px;
+    top: -12px;
+    width: 38px;
+    height: 38px;
+}
+
+.dash-road-line {
+    position: absolute;
+    bottom: 82px;
+    width: 120px;
+    height: 8px;
+    border-radius: 999px;
+    background: #fffdf5;
+    opacity: 0.88;
+    animation: dash-road-drift 1.1s linear infinite;
+}
+
+.line-one {
+    left: 18%;
+}
+
+.line-two {
+    left: 68%;
+    animation-delay: -0.55s;
+}
+
+.dash-runner {
+    position: absolute;
+    left: 11%;
+    bottom: 46px;
+    z-index: 4;
+    width: 74px;
+    height: 116px;
+    transition: filter 0.12s ease, transform 0.12s ease;
+}
+
+.dash-runner.ducking {
+    transform: translateY(22px) scaleY(0.62);
+    transform-origin: center bottom;
+}
+
+.dash-victory {
+    animation: dash-victory-hop 0.38s ease-in-out 5 alternate;
+}
+
+.dash-crash {
+    animation: dash-crash-flop 0.9s ease-out forwards;
+}
+
+.dash-monster {
+    position: absolute;
+    right: 4%;
+    bottom: 118px;
+    z-index: 3;
+    width: 132px;
+    height: 132px;
+    transform: rotate(-3deg);
+}
+
+.dash-throwing {
+    animation: dash-throw 0.22s ease-out;
+}
+
+.dash-obstacle,
+.dash-yarn-shot {
+    position: absolute;
+    z-index: 3;
+    display: block;
+    pointer-events: none;
+}
+
+.soda-crate {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #3d3150;
+    border-radius: 8px;
+    background:
+        linear-gradient(90deg, transparent 42%, #3d3150 42% 56%, transparent 56%),
+        linear-gradient(#ffffba 0 50%, #baffc9 50% 100%);
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.22);
+}
+
+.button-bump {
+    width: 58px;
+    height: 34px;
+    border: 4px solid #3d3150;
+    border-radius: 50% 50% 12px 12px;
+    background:
+        radial-gradient(circle at 35% 38%, #fffdf5 0 8%, transparent 9%),
+        #ffdfba;
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.2);
+}
+
+.needle-gate {
+    width: 34px;
+    height: 76px;
+    border-radius: 999px 999px 8px 8px;
+    background:
+        linear-gradient(90deg, #3d3150 0 28%, #bae1ff 28% 72%, #3d3150 72% 100%);
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.2);
+}
+
+.dash-yarn-shot {
+    width: 34px;
+    height: 34px;
+    border: 4px solid #3d3150;
+    border-radius: 50%;
+    background:
+        repeating-radial-gradient(circle at 45% 45%, #ff7aa8 0 5px, #e0bbff 5px 10px, #a2d2ff 10px 15px);
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.22);
+}
+
+.dash-yarn-shot::after {
+    content: "";
+    position: absolute;
+    left: 24px;
+    top: 16px;
+    width: 38px;
+    height: 4px;
+    border-radius: 999px;
+    background: #3d3150;
+    transform: rotate(12deg);
+}
+
+.dash-finish-badge {
+    top: 14%;
+}
+
+.dash-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @keyframes rainbow-glow {
     from {
         filter: saturate(1);
@@ -1010,6 +1184,54 @@ footer {
     }
 }
 
+@keyframes dash-road-drift {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-260px);
+    }
+}
+
+@keyframes dash-throw {
+    0% {
+        transform: rotate(-3deg) translateX(0);
+    }
+
+    55% {
+        transform: rotate(8deg) translateX(-14px);
+    }
+
+    100% {
+        transform: rotate(-3deg) translateX(0);
+    }
+}
+
+@keyframes dash-victory-hop {
+    from {
+        transform: translateY(0) rotate(-2deg) scale(1);
+    }
+
+    to {
+        transform: translateY(-18px) rotate(5deg) scale(1.05);
+    }
+}
+
+@keyframes dash-crash-flop {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    72% {
+        transform: translateY(20px) rotate(-72deg);
+    }
+
+    100% {
+        transform: translateY(26px) rotate(-80deg);
+    }
+}
+
 @media (max-width: 600px) {
     header nav {
         flex-direction: column;
@@ -1069,6 +1291,27 @@ footer {
 
     .kit-controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dash-hud {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-runner {
+        left: 7%;
+        transform: scale(0.8);
+        transform-origin: left bottom;
+    }
+
+    .dash-runner.ducking {
+        transform: translateY(22px) scale(0.8, 0.56);
+    }
+
+    .dash-monster {
+        right: -4px;
+        bottom: 142px;
+        transform: rotate(-3deg) scale(0.72);
+        transform-origin: right bottom;
     }
 
     .kit-directions {

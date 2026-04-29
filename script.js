@@ -1,5 +1,5 @@
 // SodaShip Storefront JavaScript
-const MINI_GAME_VERSION_FALLBACK = 'v1.1';
+const MINI_GAME_VERSION_FALLBACK = 'v1.2';
 
 let sodaAudioContext;
 let sodaMasterGain;
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setupKitQuestEasterEgg();
+    setupYarnDashEasterEgg();
     setupProtectedEmail();
     loadMiniGameVersion();
 });
@@ -420,6 +421,30 @@ function setupKitQuestEasterEgg() {
     });
 }
 
+function setupYarnDashEasterEgg() {
+    const secretCode = 'yarndash';
+    let typedCode = '';
+
+    document.addEventListener('keydown', (event) => {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) {
+            return;
+        }
+
+        if (event.key.length !== 1) {
+            return;
+        }
+
+        typedCode = `${typedCode}${event.key.toLowerCase()}`.slice(-secretCode.length);
+
+        if (typedCode === secretCode) {
+            typedCode = '';
+            launchYarnDashRun();
+        }
+    });
+}
+
 function getFooterClicks() {
     try {
         return Number(sessionStorage.getItem('sodashipFooterClicks') || 0);
@@ -446,6 +471,398 @@ function launchKnittingKitQuest() {
     updateMiniGameVersionBadges(game.overlay);
     loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
     game.start();
+}
+
+function launchYarnDashRun() {
+    if (document.querySelector('.kit-game')) {
+        return;
+    }
+
+    const game = createYarnDashRun();
+    document.body.appendChild(game.overlay);
+    updateMiniGameVersionBadges(game.overlay);
+    loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
+    game.start();
+}
+
+function createYarnDashRun() {
+    const overlay = document.createElement('div');
+    overlay.className = 'kit-game dash-game';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'dash-game-title');
+
+    overlay.innerHTML = `
+        <div class="kit-game-panel dash-game-panel">
+            <div class="kit-game-top">
+                <div>
+                    <p class="kit-game-kicker">Secret mini game</p>
+                    <h2 id="dash-game-title">LilyPad Yarn Dash <span class="kit-game-version" aria-label="version 1.2">${MINI_GAME_VERSION_FALLBACK}</span></h2>
+                </div>
+                <button class="kit-close" type="button" aria-label="Close game">x</button>
+            </div>
+            <div class="dash-hud">
+                <div class="kit-score">Yards: <strong class="dash-distance">0</strong></div>
+                <div class="kit-score">Hearts: <strong class="dash-hearts">3</strong></div>
+                <div class="kit-score">Dodges: <strong class="dash-dodges">0</strong></div>
+            </div>
+            <div class="kit-arena dash-arena" tabindex="0" aria-label="Yarn dash obstacle lane">
+                <div class="dash-cloud cloud-one"></div>
+                <div class="dash-cloud cloud-two"></div>
+                <div class="dash-road-line line-one"></div>
+                <div class="dash-road-line line-two"></div>
+                <div class="dash-runner" aria-hidden="true">
+                    <span class="girl-hair"></span>
+                    <span class="girl-head"></span>
+                    <span class="girl-body"></span>
+                    <span class="girl-arm"></span>
+                    <span class="girl-kit"></span>
+                </div>
+                <div class="dash-monster" aria-hidden="true">
+                    <span class="monster-ball"></span>
+                    <span class="monster-eye eye-left"></span>
+                    <span class="monster-eye eye-right"></span>
+                    <span class="monster-mouth"></span>
+                    <span class="monster-tentacle tentacle-one"></span>
+                    <span class="monster-tentacle tentacle-two"></span>
+                    <span class="monster-tentacle tentacle-three"></span>
+                </div>
+                <p class="kit-announcement">Jump the bumps. Duck the flying yarn!</p>
+            </div>
+            <div class="kit-controls dash-controls">
+                <button type="button" data-dash-action="jump">Jump</button>
+                <button type="button" data-dash-action="duck">Duck</button>
+            </div>
+            <p class="kit-directions">Space, Arrow Up, or W jumps. Arrow Down, S, or Shift ducks.</p>
+        </div>
+    `;
+
+    const arena = overlay.querySelector('.dash-arena');
+    const runner = overlay.querySelector('.dash-runner');
+    const monster = overlay.querySelector('.dash-monster');
+    const distanceText = overlay.querySelector('.dash-distance');
+    const heartsText = overlay.querySelector('.dash-hearts');
+    const dodgesText = overlay.querySelector('.dash-dodges');
+    const announcement = overlay.querySelector('.kit-announcement');
+    const closeButton = overlay.querySelector('.kit-close');
+    const pressed = new Set();
+    const roadObjects = [];
+    const runnerBox = {
+        x: 92,
+        width: 42,
+        height: 86,
+        duckHeight: 52,
+        ground: 46
+    };
+    const state = {
+        active: true,
+        lastTime: 0,
+        frame: 0,
+        distance: 0,
+        hearts: 3,
+        dodges: 0,
+        runnerY: 0,
+        runnerVelocity: 0,
+        ducking: false,
+        hitGrace: 0,
+        obstacleTimer: 0.5,
+        shotTimer: 1,
+        speed: 235
+    };
+    const finishDistance = 80;
+
+    function start() {
+        arena.focus();
+        playGameStartSound();
+        document.addEventListener('keydown', handleDashKeyDown);
+        document.addEventListener('keyup', handleDashKeyUp);
+        closeButton.addEventListener('click', close);
+        overlay.addEventListener('click', handleBackdropClick);
+        overlay.querySelectorAll('[data-dash-action]').forEach((button) => {
+            button.addEventListener('pointerdown', () => {
+                if (button.dataset.dashAction === 'jump') {
+                    jump();
+                }
+
+                if (button.dataset.dashAction === 'duck') {
+                    pressed.add('duck');
+                }
+            });
+            button.addEventListener('pointerup', () => pressed.delete('duck'));
+            button.addEventListener('pointerleave', () => pressed.delete('duck'));
+            button.addEventListener('click', () => {
+                if (button.dataset.dashAction === 'jump') {
+                    jump();
+                }
+            });
+        });
+        updateDashHud();
+        state.frame = requestAnimationFrame(tick);
+    }
+
+    function close() {
+        state.active = false;
+        cancelAnimationFrame(state.frame);
+        document.removeEventListener('keydown', handleDashKeyDown);
+        document.removeEventListener('keyup', handleDashKeyUp);
+        overlay.remove();
+    }
+
+    function handleBackdropClick(event) {
+        if (event.target === overlay) {
+            close();
+        }
+    }
+
+    function handleDashKeyDown(event) {
+        if (!document.body.contains(overlay)) {
+            return;
+        }
+
+        const key = event.key.toLowerCase();
+
+        if (['arrowup', 'w', ' '].includes(key)) {
+            event.preventDefault();
+            jump();
+        }
+
+        if (['arrowdown', 's', 'shift'].includes(key)) {
+            event.preventDefault();
+            pressed.add('duck');
+        }
+
+        if (key === 'escape') {
+            close();
+        }
+    }
+
+    function handleDashKeyUp(event) {
+        const key = event.key.toLowerCase();
+
+        if (['arrowdown', 's', 'shift'].includes(key)) {
+            pressed.delete('duck');
+        }
+    }
+
+    function jump() {
+        if (!state.active || state.runnerY > 2) {
+            return;
+        }
+
+        state.runnerVelocity = 435;
+        playBlockSound();
+    }
+
+    function tick(time) {
+        if (!state.active) {
+            return;
+        }
+
+        if (!state.lastTime) {
+            state.lastTime = time;
+        }
+
+        const dt = Math.min((time - state.lastTime) / 1000, 0.05);
+        state.lastTime = time;
+        state.distance += dt * 12;
+        state.speed = Math.min(345, 235 + state.distance * 1.5);
+
+        updateDashRunner(dt);
+        updateDashSpawns(dt);
+        updateDashObjects(dt);
+        updateDashHud();
+        checkDashGameOver();
+
+        if (state.active) {
+            state.frame = requestAnimationFrame(tick);
+        }
+    }
+
+    function updateDashRunner(dt) {
+        state.runnerVelocity -= 980 * dt;
+        state.runnerY = Math.max(0, state.runnerY + state.runnerVelocity * dt);
+
+        if (state.runnerY === 0 && state.runnerVelocity < 0) {
+            state.runnerVelocity = 0;
+        }
+
+        state.ducking = pressed.has('duck') && state.runnerY < 4;
+        state.hitGrace = Math.max(0, state.hitGrace - dt);
+        runner.style.bottom = `${runnerBox.ground + state.runnerY}px`;
+        runner.classList.toggle('ducking', state.ducking);
+    }
+
+    function updateDashSpawns(dt) {
+        state.obstacleTimer -= dt;
+        state.shotTimer -= dt;
+
+        if (state.obstacleTimer <= 0) {
+            spawnDashObstacle();
+            state.obstacleTimer = 0.85 + Math.random() * 0.7;
+        }
+
+        if (state.shotTimer <= 0) {
+            spawnDashYarnShot();
+            state.shotTimer = 1.05 + Math.random() * 0.9;
+        }
+    }
+
+    function spawnDashObstacle() {
+        const type = pickRandom(['soda-crate', 'button-bump', 'needle-gate']);
+        const specs = {
+            'soda-crate': { width: 48, height: 48, bottom: runnerBox.ground },
+            'button-bump': { width: 58, height: 34, bottom: runnerBox.ground },
+            'needle-gate': { width: 34, height: 76, bottom: runnerBox.ground }
+        };
+        const obstacle = document.createElement('span');
+        const spec = specs[type];
+
+        obstacle.className = `dash-obstacle ${type}`;
+        obstacle.style.left = `${arena.clientWidth + 70}px`;
+        obstacle.style.bottom = `${spec.bottom}px`;
+        arena.appendChild(obstacle);
+        roadObjects.push({
+            element: obstacle,
+            x: arena.clientWidth + 70,
+            width: spec.width,
+            height: spec.height,
+            bottom: spec.bottom,
+            hit: false
+        });
+    }
+
+    function spawnDashYarnShot() {
+        const shot = document.createElement('span');
+        const bottom = pickRandom([102, 126, 148]);
+
+        shot.className = 'dash-yarn-shot';
+        shot.style.left = `${arena.clientWidth + 92}px`;
+        shot.style.bottom = `${bottom}px`;
+        arena.appendChild(shot);
+        roadObjects.push({
+            element: shot,
+            x: arena.clientWidth + 92,
+            width: 34,
+            height: 34,
+            bottom,
+            hit: false
+        });
+        monster.classList.add('dash-throwing');
+        playMonsterTangleSound();
+        setTimeout(() => monster.classList.remove('dash-throwing'), 220);
+    }
+
+    function updateDashObjects(dt) {
+        const player = getDashPlayerBox();
+
+        for (let i = roadObjects.length - 1; i >= 0; i -= 1) {
+            const item = roadObjects[i];
+            item.x -= state.speed * dt;
+            item.element.style.left = `${item.x}px`;
+
+            if (!item.hit && state.hitGrace === 0 && boxesOverlap(player, getDashItemBox(item))) {
+                item.hit = true;
+                state.hearts = Math.max(0, state.hearts - 1);
+                state.hitGrace = 1.25;
+                runner.classList.add('girl-hit');
+                playPlayerHitSound();
+                setTimeout(() => runner.classList.remove('girl-hit'), 180);
+                announcement.textContent = pickRandom([
+                    'Bonk! LilyPad bounced off a yarn surprise!',
+                    'Careful, the yarn lane is getting spicy!',
+                    'That tangle almost knitted a speed bump!'
+                ]);
+                item.element.remove();
+                roadObjects.splice(i, 1);
+                continue;
+            }
+
+            if (item.x < -90) {
+                state.dodges += 1;
+                item.element.remove();
+                roadObjects.splice(i, 1);
+            }
+        }
+    }
+
+    function getDashPlayerBox() {
+        const height = state.ducking ? runnerBox.duckHeight : runnerBox.height;
+        const arenaHeight = arena.clientHeight || 360;
+
+        return {
+            x: runnerBox.x,
+            y: arenaHeight - runnerBox.ground - state.runnerY - height,
+            width: runnerBox.width,
+            height
+        };
+    }
+
+    function getDashItemBox(item) {
+        const arenaHeight = arena.clientHeight || 360;
+
+        return {
+            x: item.x,
+            y: arenaHeight - item.bottom - item.height,
+            width: item.width,
+            height: item.height
+        };
+    }
+
+    function boxesOverlap(first, second) {
+        return first.x < second.x + second.width &&
+            first.x + first.width > second.x &&
+            first.y < second.y + second.height &&
+            first.y + first.height > second.y;
+    }
+
+    function updateDashHud() {
+        distanceText.textContent = `${Math.floor(state.distance)}/${finishDistance}`;
+        heartsText.textContent = state.hearts;
+        dodgesText.textContent = state.dodges;
+    }
+
+    function checkDashGameOver() {
+        if (state.distance >= finishDistance) {
+            playWinSound();
+            endDashGame('LilyPad dashed through the yarn storm!', 'Run again', 'win');
+            return;
+        }
+
+        if (state.hearts <= 0) {
+            playLoseSound();
+            endDashGame('The yarn monster made a roadblock. Try again!', 'Try again', 'lose');
+        }
+    }
+
+    function endDashGame(message, buttonText, result) {
+        state.active = false;
+        cancelAnimationFrame(state.frame);
+        document.removeEventListener('keydown', handleDashKeyDown);
+        document.removeEventListener('keyup', handleDashKeyUp);
+        roadObjects.splice(0).forEach((item) => item.element.remove());
+
+        const badge = document.createElement('div');
+        badge.className = `kit-finish-badge dash-finish-badge ${result === 'win' ? 'boss-badge' : 'soft-badge'}`;
+        badge.textContent = result === 'win' ? 'DASH COMPLETE!' : 'YARN ROADBLOCK!';
+        arena.appendChild(badge);
+        runner.classList.add(result === 'win' ? 'dash-victory' : 'dash-crash');
+        monster.classList.add(result === 'win' ? 'boss-defeated' : 'boss-gloat');
+
+        const messageText = document.createElement('span');
+        const restart = document.createElement('button');
+        messageText.textContent = message;
+        restart.className = 'kit-restart';
+        restart.type = 'button';
+        restart.textContent = buttonText;
+        announcement.replaceChildren(messageText, restart);
+
+        restart.addEventListener('click', () => {
+            close();
+            launchYarnDashRun();
+        });
+    }
+
+    return { overlay, start };
 }
 
 function createKitGame() {
