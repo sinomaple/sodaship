@@ -571,7 +571,7 @@ function createYarnDashRun() {
                     <span class="monster-tentacle tentacle-two"></span>
                     <span class="monster-tentacle tentacle-three"></span>
                 </div>
-                <p class="kit-announcement">Hop through the whole course. The monster unravels at the finish!</p>
+                <p class="kit-announcement">Hop through the long yarn course. The monster unravels at the finish!</p>
             </div>
             <div class="kit-controls dash-controls">
                 <button type="button" data-dash-action="jump">Jump</button>
@@ -595,18 +595,8 @@ function createYarnDashRun() {
         height: 86,
         ground: 46
     };
-    const dashCourse = [
-        { at: 2, type: 'button-bump' },
-        { at: 10, type: 'soda-crate' },
-        { at: 18, type: 'yarn-shot' },
-        { at: 27, type: 'button-bump' },
-        { at: 36, type: 'needle-gate' },
-        { at: 45, type: 'yarn-shot' },
-        { at: 54, type: 'soda-crate' },
-        { at: 63, type: 'button-bump' },
-        { at: 72, type: 'yarn-shot' },
-        { at: 82, type: 'needle-gate' }
-    ];
+    const finishDistance = 210;
+    const dashCourse = buildDashCourse(finishDistance);
     const state = {
         active: true,
         lastTime: 0,
@@ -617,9 +607,32 @@ function createYarnDashRun() {
         nextCourseIndex: 0,
         runnerY: 0,
         runnerVelocity: 0,
-        speed: 255
+        speed: 245
     };
-    const finishDistance = 120;
+
+    function buildDashCourse(courseFinish) {
+        const course = [];
+        const obstacleTypes = ['button-bump', 'soda-crate', 'needle-gate', 'yarn-shot'];
+        let nextDistance = 4;
+        let previousType = '';
+
+        while (nextDistance < courseFinish - 14) {
+            let type = pickRandom(obstacleTypes);
+
+            if (type === previousType) {
+                type = pickRandom(obstacleTypes.filter((obstacleType) => obstacleType !== previousType));
+            }
+
+            course.push({ at: nextDistance, type });
+            previousType = type;
+
+            const baseGap = type === 'needle-gate' ? 9 : 7;
+            const wobble = 2 + Math.floor(Math.random() * 7);
+            nextDistance += baseGap + wobble;
+        }
+
+        return course;
+    }
 
     function start() {
         arena.focus();
@@ -689,8 +702,8 @@ function createYarnDashRun() {
 
         const dt = Math.min((time - state.lastTime) / 1000, 0.05);
         state.lastTime = time;
-        state.distance += dt * 8;
-        state.speed = Math.min(340, 255 + state.distance * 0.85);
+        state.distance += dt * 6.4;
+        state.speed = Math.min(355, 245 + state.distance * 0.7);
 
         updateDashRunner(dt);
         updateDashCourse();
