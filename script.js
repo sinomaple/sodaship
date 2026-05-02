@@ -424,6 +424,7 @@ function setupKitQuestEasterEgg() {
 function setupYarnDashEasterEgg() {
     const secretCode = 'yarndash';
     let typedCode = '';
+    const dashTriggers = document.querySelectorAll('[data-yarn-dash-trigger]');
 
     document.addEventListener('keydown', (event) => {
         const activeTag = document.activeElement ? document.activeElement.tagName : '';
@@ -442,6 +443,10 @@ function setupYarnDashEasterEgg() {
             typedCode = '';
             launchYarnDashRun();
         }
+    });
+
+    dashTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', launchYarnDashRun);
     });
 }
 

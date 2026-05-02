@@ -123,6 +123,30 @@ h2 {
     border-color: #a2d2ff;
 }
 
+.secret-clue-button {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.secret-clue-button:hover,
+.secret-clue-button:focus-visible {
+    color: #7b2cbf;
+}
+
+.secret-clue-button:focus-visible {
+    outline: 3px dashed #ffb703;
+    outline-offset: 4px;
+}
+
 .margin-clue {
     box-shadow: 4px 4px 0 rgba(162, 210, 255, 0.65);
 }
