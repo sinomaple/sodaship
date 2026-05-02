@@ -222,6 +222,17 @@ footer {
     margin-top: 2rem;
 }
 
+.visitor-counter {
+    display: inline-block;
+    margin-top: 0.45rem;
+    padding: 0.25rem 0.55rem;
+    background: #fffdf5;
+    color: #3d3150;
+    border: 2px dotted #ffffba;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
 .yarn-party {
     animation: rainbow-glow 0.8s ease-in-out infinite alternate;
 }

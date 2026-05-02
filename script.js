@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupKitQuestEasterEgg();
     setupYarnDashEasterEgg();
     setupProtectedEmail();
+    setupVisitorCounter();
     loadMiniGameVersion();
 });
 
@@ -70,6 +71,44 @@ function updateMiniGameVersionBadges(root = document) {
         badge.textContent = miniGameVersion;
         badge.setAttribute('aria-label', `version ${spokenVersion}`);
     });
+}
+
+function setupVisitorCounter() {
+    const counter = document.querySelector('[data-visitor-counter]');
+    const countOutput = document.querySelector('[data-visitor-count]');
+
+    if (!counter || !countOutput || !window.fetch) {
+        return;
+    }
+
+    fetch('/api/visit', {
+        method: 'POST',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: {
+            Accept: 'application/json'
+        }
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Visitor count unavailable');
+            }
+
+            return response.json();
+        })
+        .then((data) => {
+            const visitors = Number(data && data.visitors);
+
+            if (!Number.isFinite(visitors) || visitors < 0) {
+                return;
+            }
+
+            countOutput.textContent = visitors.toLocaleString();
+            counter.hidden = false;
+        })
+        .catch(() => {
+            counter.hidden = true;
+        });
 }
 
 function getLogoClicks() {
