@@ -612,7 +612,7 @@ function createYarnDashRun() {
 
     function buildDashCourse(courseFinish) {
         const course = [];
-        const obstacleTypes = ['button-bump', 'soda-crate', 'needle-gate', 'yarn-shot'];
+        const obstacleTypes = ['button-bump', 'soda-crate', 'needle-gate', 'yarn-shot', 'road-gap'];
         let nextDistance = 4;
         let previousType = '';
 
@@ -626,7 +626,7 @@ function createYarnDashRun() {
             course.push({ at: nextDistance, type });
             previousType = type;
 
-            const baseGap = type === 'needle-gate' ? 9 : 7;
+            const baseGap = type === 'road-gap' ? 11 : type === 'needle-gate' ? 9 : 7;
             const wobble = 2 + Math.floor(Math.random() * 7);
             nextDistance += baseGap + wobble;
         }
@@ -749,7 +749,8 @@ function createYarnDashRun() {
         const specs = {
             'soda-crate': { width: 48, height: 48, bottom: runnerBox.ground },
             'button-bump': { width: 58, height: 34, bottom: runnerBox.ground },
-            'needle-gate': { width: 34, height: 76, bottom: runnerBox.ground }
+            'needle-gate': { width: 34, height: 76, bottom: runnerBox.ground },
+            'road-gap': { width: 88, height: 24, bottom: runnerBox.ground - 17, isGap: true }
         };
         const obstacle = document.createElement('span');
         const spec = specs[type];
@@ -764,6 +765,7 @@ function createYarnDashRun() {
             width: spec.width,
             height: spec.height,
             bottom: spec.bottom,
+            isGap: Boolean(spec.isGap),
             hit: false
         });
     }
@@ -797,10 +799,12 @@ function createYarnDashRun() {
             item.x -= state.speed * dt;
             item.element.style.left = `${item.x}px`;
 
-            if (!item.hit && boxesOverlap(player, getDashItemBox(item))) {
+            const itemBox = getDashItemBox(item);
+
+            if (!item.hit && itemCatchesDashRunner(player, item, itemBox)) {
                 item.hit = true;
                 playLoseSound();
-                endDashGame('Bonk! One yarn bump restarts the course.', 'Try again', 'lose');
+                endDashGame(item.isGap ? 'Whoops! LilyPad slipped into a yarn gap.' : 'Bonk! One yarn bump restarts the course.', 'Try again', 'lose');
                 return;
             }
 
@@ -832,6 +836,20 @@ function createYarnDashRun() {
             width: item.width,
             height: item.height
         };
+    }
+
+    function itemCatchesDashRunner(player, item, itemBox) {
+        if (!item.isGap) {
+            return boxesOverlap(player, itemBox);
+        }
+
+        const runnerFeetLeft = player.x + 8;
+        const runnerFeetRight = player.x + player.width - 6;
+        const gapLeft = itemBox.x + 7;
+        const gapRight = itemBox.x + itemBox.width - 7;
+        const feetOverGap = runnerFeetRight > gapLeft && runnerFeetLeft < gapRight;
+
+        return feetOverGap && state.runnerY < 38;
     }
 
     function boxesOverlap(first, second) {

@@ -1009,6 +1009,38 @@ footer {
     box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.2);
 }
 
+.road-gap {
+    z-index: 2;
+    width: 88px;
+    height: 24px;
+    border: 4px solid #3d3150;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse at center, #3d3150 0 56%, #5f4b77 57% 70%, #3d3150 71% 100%);
+    box-shadow:
+        inset 0 5px 0 rgba(255, 253, 245, 0.22),
+        4px 4px 0 rgba(61, 49, 80, 0.18);
+}
+
+.road-gap::before,
+.road-gap::after {
+    content: "";
+    position: absolute;
+    top: 9px;
+    width: 18px;
+    height: 4px;
+    border-radius: 999px;
+    background: #baffc9;
+}
+
+.road-gap::before {
+    left: -17px;
+}
+
+.road-gap::after {
+    right: -17px;
+}
+
 .dash-yarn-shot {
     width: 34px;
     height: 34px;
