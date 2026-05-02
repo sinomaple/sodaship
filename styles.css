@@ -476,35 +476,41 @@ footer {
 }
 
 .girl-hair {
-    left: 12px;
-    top: -3px;
-    width: 54px;
-    height: 88px;
-    border-radius: 48% 48% 34% 34%;
+    left: 16px;
+    top: -2px;
+    width: 48px;
+    height: 47px;
+    border-radius: 52% 52% 42% 42%;
     background:
-        radial-gradient(circle at 46% 20%, #2b2430 0 18%, transparent 19%),
-        linear-gradient(90deg, #050406 0 17%, #17121a 34% 66%, #050406 83% 100%);
+        radial-gradient(circle at 42% 18%, #2b2430 0 18%, transparent 19%),
+        linear-gradient(90deg, #050406 0 22%, #17121a 40% 64%, #050406 82% 100%);
 }
 
 .girl-hair::before,
 .girl-hair::after {
     content: "";
     position: absolute;
-    top: 19px;
-    width: 18px;
-    height: 78px;
-    border-radius: 999px 999px 12px 12px;
     background: #050406;
 }
 
 .girl-hair::before {
-    left: -3px;
-    transform: rotate(5deg);
+    right: -18px;
+    top: 13px;
+    width: 30px;
+    height: 58px;
+    border-radius: 50% 50% 46% 46%;
+    transform: rotate(-18deg);
+    box-shadow: inset 7px 0 0 #17121a;
 }
 
 .girl-hair::after {
-    right: -3px;
-    transform: rotate(-5deg);
+    right: -1px;
+    top: 19px;
+    width: 13px;
+    height: 13px;
+    border: 3px solid #3d3150;
+    border-radius: 50%;
+    background: #ff7aa8;
 }
 
 .girl-head {
