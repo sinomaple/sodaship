@@ -571,7 +571,7 @@ function createYarnDashRun() {
                     <span class="monster-tentacle tentacle-two"></span>
                     <span class="monster-tentacle tentacle-three"></span>
                 </div>
-                <p class="kit-announcement">Hop through the long yarn course. The monster unravels at the finish!</p>
+                <p class="kit-announcement">Tap through spikes, blocks, gaps, and bounce pads to reach the finish!</p>
             </div>
             <div class="kit-controls dash-controls">
                 <button type="button" data-dash-action="jump">Jump</button>
@@ -612,7 +612,7 @@ function createYarnDashRun() {
 
     function buildDashCourse(courseFinish) {
         const course = [];
-        const obstacleTypes = ['button-bump', 'soda-crate', 'needle-gate', 'yarn-shot', 'road-gap'];
+        const obstacleTypes = ['button-bump', 'soda-crate', 'needle-gate', 'yarn-shot', 'road-gap', 'yarn-spike', 'yarn-tower', 'bounce-pad'];
         let nextDistance = 4;
         let previousType = '';
 
@@ -626,7 +626,7 @@ function createYarnDashRun() {
             course.push({ at: nextDistance, type });
             previousType = type;
 
-            const baseGap = type === 'road-gap' ? 11 : type === 'needle-gate' ? 9 : 7;
+            const baseGap = ['road-gap', 'bounce-pad'].includes(type) ? 11 : ['needle-gate', 'yarn-tower'].includes(type) ? 9 : 7;
             const wobble = 2 + Math.floor(Math.random() * 7);
             nextDistance += baseGap + wobble;
         }
@@ -730,6 +730,7 @@ function createYarnDashRun() {
         }
 
         runner.style.bottom = `${runnerBox.ground + state.runnerY}px`;
+        runner.style.transform = state.runnerY > 1 ? `rotate(${Math.min(32, state.runnerY * 0.22)}deg)` : 'rotate(0deg)';
     }
 
     function updateDashCourse() {
@@ -750,7 +751,10 @@ function createYarnDashRun() {
             'soda-crate': { width: 48, height: 48, bottom: runnerBox.ground },
             'button-bump': { width: 58, height: 34, bottom: runnerBox.ground },
             'needle-gate': { width: 34, height: 76, bottom: runnerBox.ground },
-            'road-gap': { width: 88, height: 24, bottom: runnerBox.ground - 17, isGap: true }
+            'road-gap': { width: 88, height: 24, bottom: runnerBox.ground - 17, isGap: true },
+            'yarn-spike': { width: 48, height: 46, bottom: runnerBox.ground, isSpike: true },
+            'yarn-tower': { width: 54, height: 72, bottom: runnerBox.ground },
+            'bounce-pad': { width: 64, height: 18, bottom: runnerBox.ground, isPad: true }
         };
         const obstacle = document.createElement('span');
         const spec = specs[type];
@@ -766,6 +770,8 @@ function createYarnDashRun() {
             height: spec.height,
             bottom: spec.bottom,
             isGap: Boolean(spec.isGap),
+            isPad: Boolean(spec.isPad),
+            isSpike: Boolean(spec.isSpike),
             hit: false
         });
     }
@@ -801,7 +807,13 @@ function createYarnDashRun() {
 
             const itemBox = getDashItemBox(item);
 
-            if (!item.hit && itemCatchesDashRunner(player, item, itemBox)) {
+            if (!item.hit && item.isPad && dashPadTouchesRunner(player, itemBox)) {
+                item.hit = true;
+                item.element.classList.add('pad-used');
+                state.runnerY = Math.max(state.runnerY, 14);
+                state.runnerVelocity = 560;
+                playShieldSound();
+            } else if (!item.hit && itemCatchesDashRunner(player, item, itemBox)) {
                 item.hit = true;
                 playLoseSound();
                 endDashGame(item.isGap ? 'Whoops! LilyPad slipped into a yarn gap.' : 'Bonk! One yarn bump restarts the course.', 'Try again', 'lose');
@@ -840,6 +852,19 @@ function createYarnDashRun() {
 
     function itemCatchesDashRunner(player, item, itemBox) {
         if (!item.isGap) {
+            if (item.isPad) {
+                return false;
+            }
+
+            if (item.isSpike) {
+                return boxesOverlap(player, {
+                    x: itemBox.x + 8,
+                    y: itemBox.y + 8,
+                    width: itemBox.width - 16,
+                    height: itemBox.height - 8
+                });
+            }
+
             return boxesOverlap(player, itemBox);
         }
 
@@ -850,6 +875,15 @@ function createYarnDashRun() {
         const feetOverGap = runnerFeetRight > gapLeft && runnerFeetLeft < gapRight;
 
         return feetOverGap && state.runnerY < 38;
+    }
+
+    function dashPadTouchesRunner(player, itemBox) {
+        const runnerFeet = player.y + player.height;
+        const runnerCenter = player.x + player.width / 2;
+        const padLeft = itemBox.x - 4;
+        const padRight = itemBox.x + itemBox.width + 4;
+
+        return runnerCenter > padLeft && runnerCenter < padRight && runnerFeet >= itemBox.y - 12 && runnerFeet <= itemBox.y + itemBox.height + 16;
     }
 
     function boxesOverlap(first, second) {

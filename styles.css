@@ -913,7 +913,10 @@ footer {
 
 .dash-arena {
     background:
+        linear-gradient(90deg, rgba(255, 253, 245, 0.14) 1px, transparent 1px),
+        linear-gradient(rgba(255, 253, 245, 0.14) 1px, transparent 1px),
         linear-gradient(#bde0fe 0 42%, #d9f99d 42% 62%, #8d99ae 62% 100%);
+    background-size: 46px 46px, 46px 46px, auto;
 }
 
 .dash-cloud {
@@ -1036,6 +1039,57 @@ footer {
     background:
         linear-gradient(90deg, #3d3150 0 28%, #bae1ff 28% 72%, #3d3150 72% 100%);
     box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.2);
+}
+
+.yarn-spike {
+    width: 48px;
+    height: 46px;
+    background:
+        linear-gradient(135deg, transparent 0 48%, #3d3150 49% 56%, transparent 57%),
+        linear-gradient(225deg, transparent 0 48%, #3d3150 49% 56%, transparent 57%),
+        linear-gradient(135deg, transparent 0 50%, #ff7aa8 51% 100%);
+    filter: drop-shadow(4px 4px 0 rgba(61, 49, 80, 0.2));
+}
+
+.yarn-spike::after {
+    content: "";
+    position: absolute;
+    left: 17px;
+    bottom: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fffdf5;
+}
+
+.yarn-tower {
+    width: 54px;
+    height: 72px;
+    border: 4px solid #3d3150;
+    border-radius: 7px;
+    background:
+        linear-gradient(90deg, transparent 45%, #3d3150 45% 55%, transparent 55%),
+        linear-gradient(transparent 45%, #3d3150 45% 55%, transparent 55%),
+        linear-gradient(#bae1ff 0 50%, #e0bbff 50% 100%);
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.22);
+}
+
+.bounce-pad {
+    width: 64px;
+    height: 18px;
+    border: 4px solid #3d3150;
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 50% 40%, #fffdf5 0 13%, transparent 14%),
+        #ffb703;
+    box-shadow: 4px 4px 0 rgba(61, 49, 80, 0.2);
+}
+
+.bounce-pad.pad-used {
+    background:
+        radial-gradient(circle at 50% 40%, #fffdf5 0 13%, transparent 14%),
+        #baffc9;
+    transform: scaleY(0.72);
 }
 
 .road-gap {
