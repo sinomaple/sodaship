@@ -7,18 +7,28 @@
 }
 
 body {
+    --sticky-footer-space: 7rem;
     font-family: "Comic Sans MS", "Trebuchet MS", cursive, sans-serif;
     line-height: 1.6;
     color: #3d3150;
     background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #e0bbff);
     min-height: 100vh;
+    padding-bottom: var(--sticky-footer-space);
+}
+
+body.mini-game-active {
+    padding-bottom: 0;
 }
 
 header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
     background: #ff7aa8;
     color: #fffdf5;
     padding: 1rem;
     border-bottom: 6px dotted #e0bbff;
+    box-shadow: 0 4px 0 rgba(123, 44, 191, 0.18);
 }
 
 header nav {
@@ -349,11 +359,23 @@ h2 {
 }
 
 footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 30;
     background: #ff7aa8;
     color: #fffdf5;
     text-align: center;
     padding: 1rem;
-    margin-top: 2rem;
+    margin-top: 0;
+    border-top: 6px dotted #e0bbff;
+    box-shadow: 0 -4px 0 rgba(123, 44, 191, 0.18);
+}
+
+body.mini-game-active footer {
+    position: static;
+    box-shadow: none;
 }
 
 .visitor-counter {
@@ -401,7 +423,7 @@ footer {
 
 .footer-tap-note {
     top: auto;
-    bottom: 1rem;
+    bottom: var(--sticky-footer-space);
     z-index: 35;
     animation: note-pop 0.28s ease-out;
 }
@@ -1515,11 +1537,7 @@ footer {
 
 @media (max-width: 768px) {
     body {
-        padding-bottom: calc(5.25rem + env(safe-area-inset-bottom));
-    }
-
-    body.mini-game-active {
-        padding-bottom: 0;
+        --sticky-footer-space: calc(5.25rem + env(safe-area-inset-bottom));
     }
 
     header nav {
@@ -1543,11 +1561,7 @@ footer {
     }
 
     header {
-        position: sticky;
-        top: 0;
-        z-index: 30;
         padding: 0.75rem;
-        box-shadow: 0 4px 0 rgba(123, 44, 191, 0.18);
     }
 
     .menu-toggle {
@@ -1629,24 +1643,11 @@ footer {
     }
 
     footer {
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 30;
-        margin-top: 0;
         padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-        border-top: 6px dotted #e0bbff;
-        box-shadow: 0 -4px 0 rgba(123, 44, 191, 0.18);
-    }
-
-    body.mini-game-active footer {
-        position: static;
-        box-shadow: none;
     }
 
     .footer-tap-note {
-        bottom: calc(5.25rem + env(safe-area-inset-bottom));
+        bottom: var(--sticky-footer-space);
     }
 
     .email-button {
