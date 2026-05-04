@@ -45,4 +45,5 @@ SodaShip is a playful static website for LilyPad's knitted hobby products.
 
 ## Automation
 - After review, auto commit and push to github
+- After every normal push to `main`, remember that GitHub Actions remotely bumps `mini-game-version.json`; wait briefly, then run `git fetch origin` and `git pull --ff-only` so the local checkout syncs the version bump commit before finishing.
 - After push to github test and verify public facing site has latest code
