@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupYarnDashEasterEgg();
     setupProtectedEmail();
     setupVisitorCounter();
+    setupDailyYarnMood();
     loadMiniGameVersion();
 });
 
@@ -109,6 +110,26 @@ function setupVisitorCounter() {
         .catch(() => {
             counter.hidden = true;
         });
+}
+
+function setupDailyYarnMood() {
+    const moodOutput = document.querySelector('[data-yarn-mood]');
+
+    if (!moodOutput) {
+        return;
+    }
+
+    const moods = [
+        'extra squishy',
+        'secretly rainbow',
+        'ready for a tiny adventure',
+        'soft but very determined',
+        'covered in sticker ideas',
+        'weekend cozy',
+        'mystery color mode'
+    ];
+
+    moodOutput.textContent = `Today's yarn mood: ${pickRandom(moods)}`;
 }
 
 function getLogoClicks() {
@@ -452,10 +473,12 @@ function setupKitQuestEasterEgg() {
 
         if (footerClicks < 4) {
             setFooterClicks(footerClicks);
+            showFooterTapHint(footerClicks);
             return;
         }
 
         setFooterClicks(0);
+        showFooterTapHint(4);
         launchKnittingKitQuest();
     });
 }
@@ -515,6 +538,23 @@ function launchKnittingKitQuest() {
     updateMiniGameVersionBadges(game.overlay);
     loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
     game.start();
+}
+
+function showFooterTapHint(count) {
+    const oldNote = document.querySelector('.footer-tap-note');
+
+    if (oldNote) {
+        oldNote.remove();
+    }
+
+    const note = document.createElement('div');
+    note.className = 'easter-egg-message footer-tap-note';
+    note.textContent = count < 4 ? `bottom stitch noticed you (${count}/4)` : 'bottom stitch opened the secret basket';
+    document.body.appendChild(note);
+
+    setTimeout(() => {
+        note.remove();
+    }, 1350);
 }
 
 function launchYarnDashRun() {
