@@ -1,8 +1,8 @@
 {
   "major": 1,
-  "minor": 17,
-  "version": "v1.17",
-  "updatedAt": "2026-05-04T02:24:41.126912Z",
-  "sourceCommit": "d407b7f",
+  "minor": 18,
+  "version": "v1.18",
+  "updatedAt": "2026-05-04T02:32:22.441360Z",
+  "sourceCommit": "0ef264e",
   "note": "Auto-bumped by GitHub Actions after normal pushes to main."
 }
