@@ -684,7 +684,17 @@ function createYarnDashRun() {
         closeButton.addEventListener('click', close);
         overlay.addEventListener('click', handleBackdropClick);
         overlay.querySelectorAll('[data-dash-action]').forEach((button) => {
-            button.addEventListener('pointerdown', () => {
+            button.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                button.classList.add('active');
+                if (button.dataset.dashAction === 'jump') {
+                    jump();
+                }
+            });
+            button.addEventListener('pointerup', () => button.classList.remove('active'));
+            button.addEventListener('pointerleave', () => button.classList.remove('active'));
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
                 if (button.dataset.dashAction === 'jump') {
                     jump();
                 }
@@ -1071,7 +1081,9 @@ function createKitGame() {
         closeButton.addEventListener('click', close);
         overlay.addEventListener('click', handleBackdropClick);
         overlay.querySelectorAll('[data-kit-action]').forEach((button) => {
-            button.addEventListener('pointerdown', () => {
+            button.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                button.classList.add('active');
                 pressed.add(button.dataset.kitAction);
                 if (button.dataset.kitAction === 'throw') {
                     throwKit();
@@ -1080,8 +1092,14 @@ function createKitGame() {
                     raiseShield();
                 }
             });
-            button.addEventListener('pointerup', () => pressed.delete(button.dataset.kitAction));
-            button.addEventListener('pointerleave', () => pressed.delete(button.dataset.kitAction));
+            button.addEventListener('pointerup', () => {
+                button.classList.remove('active');
+                pressed.delete(button.dataset.kitAction);
+            });
+            button.addEventListener('pointerleave', () => {
+                button.classList.remove('active');
+                pressed.delete(button.dataset.kitAction);
+            });
             button.addEventListener('click', () => {
                 if (button.dataset.kitAction === 'throw') {
                     throwKit();
@@ -1158,7 +1176,7 @@ function createKitGame() {
             return;
         }
 
-        state.cooldown = 0.34;
+        state.cooldown = 0.2;
         state.kits -= 1;
 
         const kit = document.createElement('span');

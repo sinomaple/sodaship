@@ -1000,6 +1000,19 @@ footer {
     font: inherit;
     font-weight: bold;
     cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.05s ease;
+}
+
+.kit-controls button:active,
+.kit-controls button.active {
+    transform: scale(0.95);
+    box-shadow: inset 2px 2px 0 rgba(61, 49, 80, 0.3);
+}
+
+.kit-controls button:hover:not(:disabled) {
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(61, 49, 80, 0.2);
 }
 
 .kit-controls button:nth-child(2) {
@@ -1588,6 +1601,15 @@ footer {
 
     .kit-controls button {
         min-height: 44px;
+    }
+
+    .kit-controls button,
+    .button,
+    .email-button {
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     .dash-hud {
