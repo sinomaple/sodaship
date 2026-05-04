@@ -421,7 +421,7 @@ function drawEmailPicture(email) {
     canvas.width = width * scale;
     canvas.height = height * scale;
     canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    canvas.style.height = 'auto';
     canvas.className = 'email-picture';
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', 'Protected email picture');
@@ -537,6 +537,7 @@ function launchKnittingKitQuest() {
     }
 
     const game = createKitGame();
+    setMiniGameActive(true);
     document.body.appendChild(game.overlay);
     updateMiniGameVersionBadges(game.overlay);
     loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
@@ -566,10 +567,15 @@ function launchYarnDashRun() {
     }
 
     const game = createYarnDashRun();
+    setMiniGameActive(true);
     document.body.appendChild(game.overlay);
     updateMiniGameVersionBadges(game.overlay);
     loadMiniGameVersion().then(() => updateMiniGameVersionBadges(game.overlay));
     game.start();
+}
+
+function setMiniGameActive(isActive) {
+    document.body.classList.toggle('mini-game-active', isActive);
 }
 
 function createYarnDashRun() {
@@ -708,6 +714,7 @@ function createYarnDashRun() {
         state.active = false;
         cancelAnimationFrame(state.frame);
         document.removeEventListener('keydown', handleDashKeyDown);
+        setMiniGameActive(false);
         overlay.remove();
     }
 
@@ -783,7 +790,7 @@ function createYarnDashRun() {
         }
 
         runner.style.bottom = `${runnerBox.ground + state.runnerY}px`;
-        runner.style.transform = state.runnerY > 1 ? `rotate(${Math.min(32, state.runnerY * 0.22)}deg)` : 'rotate(0deg)';
+        runner.style.setProperty('--dash-runner-rotation', state.runnerY > 1 ? `${Math.min(32, state.runnerY * 0.22)}deg` : '0deg');
     }
 
     function updateDashCourse() {
@@ -1118,6 +1125,7 @@ function createKitGame() {
         cancelAnimationFrame(state.frame);
         document.removeEventListener('keydown', handleGameKeyDown);
         document.removeEventListener('keyup', handleGameKeyUp);
+        setMiniGameActive(false);
         overlay.remove();
     }
 
@@ -1425,23 +1433,51 @@ function createKitGame() {
 function setupMobileMenu() {
     const menuToggle = document.querySelector('[data-menu-toggle]');
     const navMenu = document.querySelector('.nav-menu');
+    const mobileMenuQuery = window.matchMedia('(max-width: 768px)');
 
     if (!menuToggle || !navMenu) {
         return;
     }
 
+    function setMenuOpen(isOpen) {
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+        menuToggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+        navMenu.classList.toggle('active', isOpen);
+    }
+
     menuToggle.addEventListener('click', () => {
         const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
-        menuToggle.setAttribute('aria-expanded', !isOpen);
-        navMenu.classList.toggle('active');
+        setMenuOpen(!isOpen);
     });
 
-    // Close menu when a link is clicked
     navMenu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
-            menuToggle.setAttribute('aria-expanded', 'false');
-            navMenu.classList.remove('active');
+            setMenuOpen(false);
         });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!mobileMenuQuery.matches || menuToggle.getAttribute('aria-expanded') !== 'true') {
+            return;
+        }
+
+        if (menuToggle.contains(event.target) || navMenu.contains(event.target)) {
+            return;
+        }
+
+        setMenuOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            setMenuOpen(false);
+        }
+    });
+
+    mobileMenuQuery.addEventListener('change', (event) => {
+        if (!event.matches) {
+            setMenuOpen(false);
+        }
     });
 }
 
