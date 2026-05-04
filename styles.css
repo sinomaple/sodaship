@@ -27,6 +27,8 @@ header nav {
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 header h1 {
@@ -43,9 +45,40 @@ header h1 {
 .brand img {
     width: 180px;
     height: auto;
+    max-width: 100%;
 }
 
-header ul {
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.menu-toggle span {
+    width: 28px;
+    height: 3px;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: rotate(45deg) translate(10px, 10px);
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+.nav-menu {
     list-style: none;
     display: flex;
     gap: 1.5rem;
@@ -1431,7 +1464,330 @@ footer {
 
     55% {
         transform: rotate(8deg) translateX(-14px);
+    }768px) {
+    header h1 {
+        font-size: 1.5rem;
     }
+
+    .brand img {
+        width: 140px;
+    }
+
+    header {
+        padding: 0.75rem;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-menu {
+        flex-basis: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .nav-menu.active {
+        max-height: 500px;
+    }
+
+    .nav-menu li {
+        border-bottom: 2px dotted #fffdf5;
+        padding: 0.5rem 0;
+    }
+
+    .nav-menu li:last-child {
+        border-bottom: none;
+    }
+
+    .nav-menu a {
+        display: block;
+        padding: 0.5rem 0;
+    }
+
+    .button {
+        padding: 0.65rem 0.9rem;
+        font-size: 1rem;
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    .hero {
+        padding: 2rem 1rem;
+        border: 3px dashed #a2d2ff;
+    }
+
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+
+    main {
+        padding: 1.5rem 1rem;
+    }
+
+    .email-button {
+        min-height: 44px;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .product-list section {
+        padding: 0.8rem;
+    }
+
+    .kit-game {
+        padding: 0.35rem;
+    }
+
+    .kit-game-panel {
+        width: 100%;
+        padding: 0.65rem;
+        border-width: 4px;
+        box-shadow: 4px 4px 0 #ffb703;
+    }
+
+    .kit-game-top {
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .kit-game-top h2 {
+        font-size: 1.35rem;
+    }
+
+    .kit-hud {
+        grid-template-columns: 1fr;
+    }
+
+    .kit-score {
+        width: 100%;
+    }
+
+    .kit-arena {
+        height: 56vh;
+        min-height: 360px;
+    }
+
+    .knit-girl {
+        left: 7%;
+        transform: translateY(-50%) scale(0.8);
+        transform-origin: left center;
+    }
+
+    .yarn-monster {
+        right: 0;
+        transform: translateY(-50%) scale(0.72);
+        transform-origin: right center;
+    }
+
+    .kit-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .kit-controls button {
+        min-height: 44px;
+    }
+
+    .dash-hud {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-runner {
+        left: 7%;
+        transform: scale(0.8);
+        transform-origin: left bottom;
+    }
+
+    .dash-monster {
+        right: -4px;
+        bottom: 142px;
+        transform: rotate(-3deg) scale(0.72);
+        transform-origin: right bottom;
+    }
+
+    .kit-directions {
+        font-size: 0.82rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 0.5rem;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    .brand img {
+        width: 100px;
+    }
+
+    header a {
+        font-size: 0.95rem;
+    }
+
+    .hero {
+        padding: 1.5rem 0.75rem;
+        border-width: 3px;
+    }
+
+    .hero h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+
+    .button {
+        padding: 0.6rem 0.8rem;
+        border-width: 2px;
+        font-size: 0.95rem;
+    }
+
+    .handmade-stamp {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.6rem;
+        border-width: 2px;
+    }
+
+    .yarn-mood {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .secret-stitch,
+    .margin-clue {
+        font-size: 0.9rem;
+        padding: 0.6rem 0.8rem;
+    }
+
+    .protected-email {
+        gap: 0.5rem;
+    }
+
+    .email-button {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.9rem;
+        min-height: 40px;
+        border-width: 2px;
+    }
+
+    .product-list {
+        gap: 0.75rem;
+    }
+
+    .product-list section {
+        padding: 0.7rem;
+    }
+
+    .product-list section h3 {
+        font-size: 1.1rem;
+    }
+
+    .product-tags span {
+        font-size: 0.75rem;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .coming-soon-basket {
+        padding: 0.8rem;
+        margin-top: 0.75rem;
+    }
+
+    .easter-egg-message {
+        max-width: min(90vw, 300px);
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
+        border-width: 2px;
+    }
+
+    .secret-note {
+        top: 3.5rem;
+    }
+
+    .kit-close {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+    }
+
+    .kit-meter-track {
+        height: 16px;
+        border-width: 2px;
+    }
+
+    .kit-score {
+        min-width: 5.5rem;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.9rem;
+        border-width: 2px;
+    }
+
+    .kit-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.35rem;
+    }
+
+    .kit-controls button {
+        min-height: 38px;
+        font-size: 0.85rem;
+        border-width: 2px;
+    }
+
+    .kit-announcement {
+        font-size: 0.85rem;
+        padding: 0.45rem 0.6rem;
+    }
+
+    .kit-directions {
+        font-size: 0.78rem;
+        margin-top: 0.35rem;
+    }
+
+    footer {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .visitor-counter {
+        font-size: 0.85rem;
+        padding: 0.2rem 0.45rem;
+    }
+}
+
+@media (max-width: 360px) {
+    header h1 {
+        font-size: 1rem;
+    }
+
+    .brand img {
+        width: 80px;
+    }
+
+    .hero h2 {
+        font-size: 1.3rem;
+    }
+
+    .button {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .kit-controls {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 
 
     100% {
         transform: rotate(-3deg) translateX(0);

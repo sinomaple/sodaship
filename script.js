@@ -9,6 +9,9 @@ let miniGameVersionRequest;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('SodaShip storefront loaded');
 
+    // Setup hamburger menu
+    setupMobileMenu();
+
     const logo = document.querySelector('.brand');
 
     if (logo) {
@@ -1399,6 +1402,29 @@ function createKitGame() {
     }
 
     return { overlay, start };
+}
+
+function setupMobileMenu() {
+    const menuToggle = document.querySelector('[data-menu-toggle]');
+    const navMenu = document.querySelector('.nav-menu');
+
+    if (!menuToggle || !navMenu) {
+        return;
+    }
+
+    menuToggle.addEventListener('click', () => {
+        const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', !isOpen);
+        navMenu.classList.toggle('active');
+    });
+
+    // Close menu when a link is clicked
+    navMenu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+            menuToggle.setAttribute('aria-expanded', 'false');
+            navMenu.classList.remove('active');
+        });
+    });
 }
 
 function clamp(value, min, max) {
