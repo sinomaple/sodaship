@@ -36,6 +36,7 @@ SodaShip is a playful static website for LilyPad's knitted hobby products.
 
 ## Workflow
 - Before editing, inspect the current file so recent changes are preserved.
+- If `local-notes/sodaship-todos.md` exists, check it when planning future site additions or reminders. This folder is intentionally local-only and should not be committed.
 - Do not remove user-made edits unless explicitly asked.
 - When changing any page header, compare it against `index.html` and keep the header markup, navigation links, logo reference, and shared logo sizing consistent across all pages.
 - After changing logo references or assets, check every page still points to the correct relative path.
