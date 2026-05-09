@@ -22,9 +22,11 @@ export default {
         }
 
         if (request.method !== 'POST') {
-            return jsonResponse({ error: 'Method not allowed' }, 405, {
-                Allow: 'GET, POST, OPTIONS'
-            });
+            const headers = new Headers();
+
+            headers.set('Allow', 'GET, POST, OPTIONS');
+
+            return jsonResponse({ error: 'Method not allowed' }, 405, headers);
         }
 
         const wasCounted = hasCookie(request.headers.get('Cookie') || '', VISITOR_COOKIE);
