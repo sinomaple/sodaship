@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">SodaShip favicon</title>
+  <desc id="desc">A tiny handmade soda ship with wings on a pink sky.</desc>
+  <rect width="64" height="64" rx="14" fill="#ff7aa8"/>
+  <path d="M8 49c10 6 20 6 31 0 7-4 12-4 17-1" fill="none" stroke="#7bdff2" stroke-width="5" stroke-linecap="round"/>
+  <g transform="translate(6 7) rotate(-8 28 27)">
+    <path d="M23 32 5 40l4-10 15-7z" fill="#b8f3ff" stroke="#3d3150" stroke-width="3.2" stroke-linejoin="round"/>
+    <path d="m38 32 18 8-4-10-15-7z" fill="#b8f3ff" stroke="#3d3150" stroke-width="3.2" stroke-linejoin="round"/>
+    <path d="M25 10h13l2 10 4 5v25c0 4-3 7-7 7H26c-4 0-7-3-7-7V25l4-5z" fill="#00e676" stroke="#3d3150" stroke-width="3.2" stroke-linejoin="round"/>
+    <path d="M24 4h15v9H24z" fill="#00b85c" stroke="#3d3150" stroke-width="3.2" stroke-linejoin="round"/>
+    <path d="M21 33c8-5 16-5 22 0v11c-7 5-14 5-22 0z" fill="#fffdf5" stroke="#3d3150" stroke-width="2.2" stroke-linejoin="round"/>
+    <circle cx="26" cy="25" r="2.2" fill="#fffdf5"/>
+    <circle cx="35" cy="27" r="1.8" fill="#d7fbff"/>
+    <circle cx="39" cy="22" r="2.2" fill="#fffdf5"/>
+  </g>
+</svg>
